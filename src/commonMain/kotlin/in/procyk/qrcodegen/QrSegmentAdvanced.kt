@@ -69,7 +69,7 @@ object QrSegmentAdvanced {
 
         // Iterate through version numbers, and make tentative segments
         var segs: MutableList<QrSegment>? = null
-        val codePoints = toCodePoints(text!!)
+        val codePoints = toCodePoints(text)
         var version = minVersion
         while (true) {
             if (version == minVersion || version == 10 || version == 27) segs =

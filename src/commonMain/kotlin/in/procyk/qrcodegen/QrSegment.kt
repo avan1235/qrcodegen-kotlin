@@ -30,7 +30,7 @@ import kotlin.math.min
  *
  * The mid-level way to create a segment is to take the payload data and call a
  * static factory function such as [QrSegment.makeNumeric]. The low-level
- * way to create a segment is to custom-make the bit buffer and call the [ ][QrSegment.QrSegment] with appropriate values.
+ * way to create a segment is to custom-make the bit buffer and call the [ ][QrSegment] with appropriate values.
  *
  * This segment class imposes no length restrictions, but QR Codes have restrictions.
  * Even in the most favorable conditions, a QR Code can only hold 7089 characters of data.
@@ -41,15 +41,15 @@ import kotlin.math.min
 class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
     /*---- Instance fields ----*/
     /** The mode indicator of this segment. Not `null`.  */
-	val mode: Mode
+    val mode: Mode
 
     /** The length of this segment's unencoded data. Measured in characters for
      * numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode.
      * Always zero or positive. Not the same as the data's bit length.  */
-	val numChars: Int
+    val numChars: Int
 
     // The data bits of this segment. Not null. Accessed through getData().
-	val _data: BitBuffer
+    val _data: BitBuffer
 
 
     /*---- Methods ----*/
@@ -85,8 +85,8 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
      * Describes how a segment's data bits are interpreted.
      */
     enum class Mode(// The mode indicator bits, which is a uint4 value (range 0 to 15).
-		val modeBits: Int, // Number of character count bits for three different version ranges.
-		private vararg val numBitsCharCount: Int
+        val modeBits: Int, // Number of character count bits for three different version ranges.
+        private vararg val numBitsCharCount: Int
     ) {
         /*-- Constants --*/
         NUMERIC(0x1, 10, 12, 14),
@@ -115,7 +115,7 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
          * @return a segment (not `null`) containing the data
          * @throws NullPointerException if the array is `null`
          */
-		fun makeBytes(data: ByteArray): QrSegment {
+        fun makeBytes(data: ByteArray): QrSegment {
             val bb = BitBuffer()
             for (b in data) bb.appendBits(b.toInt() and 0xFF, 8)
             return QrSegment(Mode.BYTE, data.size, bb)
@@ -129,7 +129,7 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
          * @throws NullPointerException if the string is `null`
          * @throws IllegalArgumentException if the string contains non-digit characters
          */
-		fun makeNumeric(digits: CharSequence): QrSegment {
+        fun makeNumeric(digits: CharSequence): QrSegment {
             require(isNumeric(digits)) { "String contains non-numeric characters" }
 
             val bb = BitBuffer()
@@ -153,7 +153,7 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
          * @throws NullPointerException if the string is `null`
          * @throws IllegalArgumentException if the string contains non-encodable characters
          */
-		fun makeAlphanumeric(text: CharSequence): QrSegment {
+        fun makeAlphanumeric(text: CharSequence): QrSegment {
             require(isAlphanumeric(text)) { "String contains unencodable characters in alphanumeric mode" }
 
             val bb = BitBuffer()
@@ -179,12 +179,15 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
          * @return a new mutable list (not `null`) of segments (not `null`) containing the text
          * @throws NullPointerException if the text is `null`
          */
-		fun makeSegments(text: CharSequence): MutableList<QrSegment> {
+        fun makeSegments(text: CharSequence): MutableList<QrSegment> {
             // Select the most efficient segment encoding automatically
-            val result: MutableList<QrSegment> = ArrayList<QrSegment>()
-            if (text == "") ; else if (isNumeric(text)) result.add(makeNumeric(text))
-            else if (isAlphanumeric(text)) result.add(makeAlphanumeric(text))
-            else result.add(makeBytes(text.toString().encodeToByteArray()))
+            val result: MutableList<QrSegment> = ArrayList()
+            when {
+                text == "" -> {}
+                isNumeric(text) -> result.add(makeNumeric(text))
+                isAlphanumeric(text) -> result.add(makeAlphanumeric(text))
+                else -> result.add(makeBytes(text.toString().encodeToByteArray()))
+            }
             return result
         }
 

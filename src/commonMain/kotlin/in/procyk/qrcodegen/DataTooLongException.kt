@@ -55,7 +55,4 @@ package `in`.procyk.qrcodegen
  * @see QrCode.encodeSegments
  * @see QrSegmentAdvanced.makeSegmentsOptimally
  */
-class DataTooLongException : IllegalArgumentException {
-
-    constructor(msg: String?) : super(msg)
-}
+class DataTooLongException(msg: String) : IllegalArgumentException(msg)

@@ -50,8 +50,8 @@ class BitBuffer {
      * @throws IndexOutOfBoundsException if index &lt; 0 or index &#x2265; bitLength
      */
     fun getBit(index: Int): Int {
-        if (index < 0 || index >= bitLength) throw IndexOutOfBoundsException()
-        return if (data.get(index)) 1 else 0
+        if (index !in 0..<bitLength) throw IndexOutOfBoundsException()
+        return if (data[index]) 1 else 0
     }
 
 
@@ -65,12 +65,12 @@ class BitBuffer {
      * would make bitLength exceed Integer.MAX_VALUE
      */
     fun appendBits(`val`: Int, len: Int) {
-        require(!(len < 0 || len > 31 || `val` ushr len != 0)) { "Value out of range" }
-        check(Int.Companion.MAX_VALUE - bitLength >= len) { "Maximum length reached" }
+        require(!(len !in 0..31 || `val` ushr len != 0)) { "Value out of range" }
+        check(Int.MAX_VALUE - bitLength >= len) { "Maximum length reached" }
         var i = len - 1
         while (i >= 0) {
             // Append bit by bit
-            data.set(bitLength, QrCode.getBit(`val`, i))
+            data[bitLength] = QrCode.getBit(`val`, i)
             i--
             bitLength++
         }
@@ -84,12 +84,12 @@ class BitBuffer {
      * @throws IllegalStateException if appending the data
      * would make bitLength exceed Integer.MAX_VALUE
      */
-    fun appendData(bb: BitBuffer?) {
-        check(Int.Companion.MAX_VALUE - bitLength >= bb!!.bitLength) { "Maximum length reached" }
+    fun appendData(bb: BitBuffer) {
+        check(Int.MAX_VALUE - bitLength >= bb.bitLength) { "Maximum length reached" }
         var i = 0
         while (i < bb.bitLength) {
             // Append bit by bit
-            data.set(bitLength, bb.data.get(i))
+            data[bitLength] = bb.data[i]
             i++
             bitLength++
         }
