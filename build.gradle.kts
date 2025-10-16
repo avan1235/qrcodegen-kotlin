@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.github.adokky:bitvector:0.9")
     testImplementation(kotlin("test"))
 }
 
