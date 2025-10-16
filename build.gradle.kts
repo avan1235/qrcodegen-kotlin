@@ -1,4 +1,5 @@
 plugins {
+    java
     kotlin("jvm") version "2.2.20"
 }
 
@@ -17,5 +18,5 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(21)
 }
