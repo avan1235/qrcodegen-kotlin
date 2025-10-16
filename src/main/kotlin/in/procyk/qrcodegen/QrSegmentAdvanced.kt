@@ -26,10 +26,7 @@ import `in`.procyk.qrcodegen.QrSegment.Companion.getTotalBits
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeAlphanumeric
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeBytes
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeNumeric
-import java.nio.charset.StandardCharsets
-import java.util.*
-import java.util.function.IntConsumer
-import java.util.function.IntPredicate
+import kotlin.text.Charsets.UTF_8
 
 /**
  * Splits text into optimal segments and encodes kanji segments.
@@ -65,14 +62,12 @@ object QrSegmentAdvanced {
         maxVersion: Int
     ): MutableList<QrSegment> {
         // Check arguments
-        Objects.requireNonNull<CharSequence?>(text)
-        Objects.requireNonNull<QrCode.Ecc?>(ecl)
         require(QrCode.MIN_VERSION <= minVersion && minVersion <= maxVersion && maxVersion <= QrCode.MAX_VERSION) { "Invalid value" }
 
 
         // Iterate through version numbers, and make tentative segments
         var segs: MutableList<QrSegment>? = null
-        val codePoints = QrSegmentAdvanced.toCodePoints(text!!)
+        val codePoints = toCodePoints(text!!)
         var version = minVersion
         while (true) {
             if (version == minVersion || version == 10 || version == 27) segs =
@@ -228,7 +223,7 @@ object QrSegmentAdvanced {
                 continue
             }
             val s = String(codePoints, start, i - start)
-            if (curMode == QrSegment.Mode.BYTE) result.add(makeBytes(s.toByteArray(StandardCharsets.UTF_8)))
+            if (curMode == QrSegment.Mode.BYTE) result.add(makeBytes(s.toByteArray(UTF_8)))
             else if (curMode == QrSegment.Mode.NUMERIC) result.add(makeNumeric(s))
             else if (curMode == QrSegment.Mode.ALPHANUMERIC) result.add(makeAlphanumeric(s))
             else if (curMode == QrSegment.Mode.KANJI) result.add(makeKanji(s))
@@ -276,14 +271,13 @@ object QrSegmentAdvanced {
      * @throws IllegalArgumentException if the string contains non-encodable characters
      * @see .isEncodableAsKanji
      */
-    fun makeKanji(text: CharSequence?): QrSegment {
-        Objects.requireNonNull<CharSequence?>(text)
+    fun makeKanji(text: CharSequence): QrSegment {
         val bb = BitBuffer()
-        text!!.chars().forEachOrdered(IntConsumer { c: Int ->
-            val `val` = UNICODE_TO_QR_KANJI[c].toInt()
+        text!!.chars().forEachOrdered {
+            val `val` = UNICODE_TO_QR_KANJI[it].toInt()
             require(`val` != -1) { "String contains non-kanji-mode characters" }
             bb.appendBits(`val`, 13)
-        })
+        }
         return QrSegment(QrSegment.Mode.KANJI, text.length, bb)
     }
 
@@ -299,10 +293,8 @@ object QrSegmentAdvanced {
      * @throws NullPointerException if the string is `null`
      * @see .makeKanji
      */
-    fun isEncodableAsKanji(text: CharSequence?): Boolean {
-        Objects.requireNonNull<CharSequence?>(text)
-        return text!!.chars().allMatch(
-            IntPredicate { c: Int -> isKanji(c.toChar().code) })
+    fun isEncodableAsKanji(text: CharSequence): Boolean {
+        return text.chars().allMatch { isKanji(it.toChar().code) }
     }
 
 
@@ -425,11 +417,10 @@ object QrSegmentAdvanced {
                 "/////////////////////////////////////////////w=="
 
 
-    private val UNICODE_TO_QR_KANJI = ShortArray(1 shl 16)
+    private val UNICODE_TO_QR_KANJI = ShortArray(1 shl 16) { -1 }
 
     init {  // Unpack the Shift JIS table into a more computation-friendly form
-        Arrays.fill(UNICODE_TO_QR_KANJI, (-1).toShort())
-        val bytes = Base64.getDecoder().decode(PACKED_QR_KANJI_TO_UNICODE)
+        val bytes = kotlin.io.encoding.Base64.decode(PACKED_QR_KANJI_TO_UNICODE)
         var i = 0
         while (i < bytes.size) {
             val c = (((bytes[i].toInt() and 0xFF) shl 8) or (bytes[i + 1].toInt() and 0xFF)).toChar()

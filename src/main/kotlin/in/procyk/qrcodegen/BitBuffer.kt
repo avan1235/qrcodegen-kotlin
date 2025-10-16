@@ -22,27 +22,17 @@
  */
 package `in`.procyk.qrcodegen
 
-import java.util.*
+import dev.dokky.bitvector.MutableBitVector
 
 /**
  * An appendable sequence of bits (0s and 1s). Mainly used by [QrSegment].
  */
-class BitBuffer : Cloneable {
-    /*---- Fields ----*/
-    private var data: BitSet
+class BitBuffer {
+    private var data: MutableBitVector = MutableBitVector()
 
     private var bitLength = 0 // Non-negative
 
 
-    /*---- Constructor ----*/ /**
-     * Constructs an empty bit buffer (length 0).
-     */
-    init {
-        data = BitSet()
-    }
-
-
-    /*---- Methods ----*/
     /**
      * Returns the length of this sequence, which is a non-negative value.
      * @return the length of this sequence
@@ -95,7 +85,6 @@ class BitBuffer : Cloneable {
      * would make bitLength exceed Integer.MAX_VALUE
      */
     fun appendData(bb: BitBuffer?) {
-        Objects.requireNonNull<BitBuffer?>(bb)
         check(Int.Companion.MAX_VALUE - bitLength >= bb!!.bitLength) { "Maximum length reached" }
         var i = 0
         while (i < bb.bitLength) {
@@ -111,13 +100,8 @@ class BitBuffer : Cloneable {
      * Returns a new copy of this buffer.
      * @return a new copy of this buffer (not `null`)
      */
-    public override fun clone(): BitBuffer {
-        try {
-            val result = super.clone() as BitBuffer
-            result.data = result.data.clone() as BitSet
-            return result
-        } catch (e: CloneNotSupportedException) {
-            throw AssertionError(e)
-        }
+    fun clone(): BitBuffer = BitBuffer().also {
+        it.bitLength = bitLength
+        it.data = data.copy()
     }
 }

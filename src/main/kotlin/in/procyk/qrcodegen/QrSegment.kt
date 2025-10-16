@@ -22,10 +22,8 @@
  */
 package `in`.procyk.qrcodegen
 
-import java.nio.charset.StandardCharsets
-import java.util.*
-import java.util.regex.Pattern
 import kotlin.math.min
+import kotlin.text.Charsets.UTF_8
 
 /**
  * A segment of character/binary/control data in a QR Code symbol.
@@ -41,21 +39,18 @@ import kotlin.math.min
  * This class can represent kanji mode segments, but provides no help in encoding them
  * - see [QrSegmentAdvanced] for full kanji support.
  */
-class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
+class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
     /*---- Instance fields ----*/
     /** The mode indicator of this segment. Not `null`.  */
-	@JvmField
 	val mode: Mode
 
     /** The length of this segment's unencoded data. Measured in characters for
      * numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode.
      * Always zero or positive. Not the same as the data's bit length.  */
-	@JvmField
 	val numChars: Int
 
     // The data bits of this segment. Not null. Accessed through getData().
-	@JvmField
-	val data: BitBuffer
+	val _data: BitBuffer
 
 
     /*---- Methods ----*/
@@ -64,7 +59,7 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
      * @return a new copy of the data bits (not `null`)
      */
     fun getData(): BitBuffer {
-        return data.clone() // Make defensive copy
+        return _data.clone() // Make defensive copy
     }
 
 
@@ -79,11 +74,10 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
      * @throws IllegalArgumentException if the character count is negative
      */
     init {
-        mode = Objects.requireNonNull<Mode>(md)
-        Objects.requireNonNull<BitBuffer?>(data)
+        mode = md
         require(numCh >= 0) { "Invalid value" }
         numChars = numCh
-        this.data = data!!.clone() // Make defensive copy
+        this._data = data.clone() // Make defensive copy
     }
 
 
@@ -92,7 +86,7 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
      * Describes how a segment's data bits are interpreted.
      */
     enum class Mode(// The mode indicator bits, which is a uint4 value (range 0 to 15).
-		@JvmField val modeBits: Int, // Number of character count bits for three different version ranges.
+		val modeBits: Int, // Number of character count bits for three different version ranges.
 		private vararg val numBitsCharCount: Int
     ) {
         /*-- Constants --*/
@@ -122,11 +116,9 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
          * @return a segment (not `null`) containing the data
          * @throws NullPointerException if the array is `null`
          */
-		@JvmStatic
-		fun makeBytes(data: ByteArray?): QrSegment {
-            Objects.requireNonNull<ByteArray?>(data)
+		fun makeBytes(data: ByteArray): QrSegment {
             val bb = BitBuffer()
-            for (b in data!!) bb.appendBits(b.toInt() and 0xFF, 8)
+            for (b in data) bb.appendBits(b.toInt() and 0xFF, 8)
             return QrSegment(Mode.BYTE, data.size, bb)
         }
 
@@ -138,10 +130,8 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
          * @throws NullPointerException if the string is `null`
          * @throws IllegalArgumentException if the string contains non-digit characters
          */
-		@JvmStatic
-		fun makeNumeric(digits: CharSequence?): QrSegment {
-            Objects.requireNonNull<CharSequence?>(digits)
-            require(Companion.isNumeric(digits!!)) { "String contains non-numeric characters" }
+		fun makeNumeric(digits: CharSequence): QrSegment {
+            require(isNumeric(digits)) { "String contains non-numeric characters" }
 
             val bb = BitBuffer()
             var i = 0
@@ -164,10 +154,8 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
          * @throws NullPointerException if the string is `null`
          * @throws IllegalArgumentException if the string contains non-encodable characters
          */
-		@JvmStatic
-		fun makeAlphanumeric(text: CharSequence?): QrSegment {
-            Objects.requireNonNull<CharSequence?>(text)
-            require(Companion.isAlphanumeric(text!!)) { "String contains unencodable characters in alphanumeric mode" }
+		fun makeAlphanumeric(text: CharSequence): QrSegment {
+            require(isAlphanumeric(text)) { "String contains unencodable characters in alphanumeric mode" }
 
             val bb = BitBuffer()
             var i: Int
@@ -192,16 +180,12 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
          * @return a new mutable list (not `null`) of segments (not `null`) containing the text
          * @throws NullPointerException if the text is `null`
          */
-		@JvmStatic
-		fun makeSegments(text: CharSequence?): MutableList<QrSegment> {
-            Objects.requireNonNull<CharSequence?>(text)
-
-
+		fun makeSegments(text: CharSequence): MutableList<QrSegment> {
             // Select the most efficient segment encoding automatically
             val result: MutableList<QrSegment> = ArrayList<QrSegment>()
-            if (text == "") ; else if (Companion.isNumeric(text!!)) result.add(makeNumeric(text))
-            else if (Companion.isAlphanumeric(text)) result.add(makeAlphanumeric(text))
-            else result.add(makeBytes(text.toString().toByteArray(StandardCharsets.UTF_8)))
+            if (text == "") ; else if (isNumeric(text)) result.add(makeNumeric(text))
+            else if (isAlphanumeric(text)) result.add(makeAlphanumeric(text))
+            else result.add(makeBytes(text.toString().toByteArray(UTF_8)))
             return result
         }
 
@@ -237,7 +221,7 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
          * @see .makeNumeric
          */
         fun isNumeric(text: CharSequence): Boolean {
-            return NUMERIC_REGEX.matcher(text).matches()
+            return NUMERIC_REGEX.matches(text)
         }
 
 
@@ -251,34 +235,31 @@ class QrSegment(md: Mode?, numCh: Int, data: BitBuffer?) {
          * @see .makeAlphanumeric
          */
         fun isAlphanumeric(text: CharSequence): Boolean {
-            return ALPHANUMERIC_REGEX.matcher(text).matches()
+            return ALPHANUMERIC_REGEX.matches(text)
         }
 
 
         // Calculates the number of bits needed to encode the given segments at the given version.
         // Returns a non-negative number if successful. Otherwise returns -1 if a segment has too
         // many characters to fit its length field, or the total bits exceeds Integer.MAX_VALUE.
-        @JvmStatic
         fun getTotalBits(segs: MutableList<QrSegment>, version: Int): Int {
-            Objects.requireNonNull<MutableList<QrSegment>>(segs)
             var result: Long = 0
-            for (seg in segs!!) {
-                Objects.requireNonNull<QrSegment?>(seg)
-                val ccbits = seg!!.mode.numCharCountBits(version)
+            for (seg in segs) {
+                val ccbits = seg.mode.numCharCountBits(version)
                 if (seg.numChars >= (1 shl ccbits)) return -1 // The segment's length doesn't fit the field's bit width
 
-                result += 4L + ccbits + seg.data.bitLength()
-                if (result > Int.Companion.MAX_VALUE) return -1 // The sum will overflow an int type
+                result += 4L + ccbits + seg._data.bitLength()
+                if (result > Int.MAX_VALUE) return -1 // The sum will overflow an int type
             }
             return result.toInt()
         }
 
 
         /*---- Constants ----*/ // Describes precisely all strings that are encodable in numeric mode.
-        private val NUMERIC_REGEX: Pattern = Pattern.compile("[0-9]*")
+        private val NUMERIC_REGEX: Regex = Regex("[0-9]*")
 
         // Describes precisely all strings that are encodable in alphanumeric mode.
-        private val ALPHANUMERIC_REGEX: Pattern = Pattern.compile("[A-Z0-9 $%*+./:-]*")
+        private val ALPHANUMERIC_REGEX: Regex = Regex("[A-Z0-9 $%*+./:-]*")
 
         // The set of all legal characters in alphanumeric mode, where
         // each character value maps to the index in the string.

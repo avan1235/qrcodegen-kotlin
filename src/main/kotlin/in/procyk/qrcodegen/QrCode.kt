@@ -24,7 +24,6 @@ package `in`.procyk.qrcodegen
 
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeBytes
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeSegments
-import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -59,7 +58,7 @@ import kotlin.math.min
  * (Note that all ways require supplying the desired error correction level.)
  * @see QrSegment
  */
-class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
+class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
     /*---- Instance fields ----*/ // Public immutable scalar parameters:
     /** The version number of this QR Code, which is between 1 and 40 (inclusive).
      * This determines the size of this barcode.  */
@@ -220,8 +219,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
 
     /*---- Private helper methods for constructor: Codewords and masking ----*/ // Returns a new byte string representing the given data with the appropriate error correction
     // codewords appended to it, based on this object's version and error correction level.
-    private fun addEccAndInterleave(data: ByteArray?): ByteArray {
-        Objects.requireNonNull<ByteArray?>(data)
+    private fun addEccAndInterleave(data: ByteArray): ByteArray {
         require(data!!.size == getNumDataCodewords(version, errorCorrectionLevel))
 
 
@@ -241,7 +239,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
             var k = 0
             while (i < numBlocks) {
                 val dat =
-                    Arrays.copyOfRange(data, k, k + shortBlockLen - blockEccLen + (if (i < numShortBlocks) 0 else 1))
+                    data.copyOfRange(k, k + shortBlockLen - blockEccLen + (if (i < numShortBlocks) 0 else 1))
                 k += dat.size
                 val block = dat.copyOf(shortBlockLen + 1)
                 val ecc: ByteArray = reedSolomonComputeRemainder(dat, rsDiv)
@@ -272,8 +270,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
 
     // Draws the given sequence of 8-bit codewords (data and error correction) onto the entire
     // data area of this QR Code. Function modules need to be marked off before this is called.
-    private fun drawCodewords(data: ByteArray?) {
-        Objects.requireNonNull<ByteArray?>(data)
+    private fun drawCodewords(data: ByteArray) {
         require(data!!.size == getNumRawDataModules(version) / 8)
 
         var i = 0 // Bit index into the data
@@ -482,8 +479,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
         require(!(msk < -1 || msk > 7)) { "Mask value out of range" }
         version = ver
         size = ver * 4 + 17
-        errorCorrectionLevel = Objects.requireNonNull<Ecc>(ecl)
-        Objects.requireNonNull<ByteArray?>(dataCodewords)
+        errorCorrectionLevel = ecl
         modules = Array<BooleanArray>(size) { BooleanArray(size) }  // Initially all light
         isFunction = Array<BooleanArray?>(size) { BooleanArray(size) }
 
@@ -555,9 +551,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
          * @throws DataTooLongException if the text fails to fit in the
          * largest version QR Code at the ECL, which means it is too long
          */
-        fun encodeText(text: CharSequence?, ecl: Ecc?): QrCode {
-            Objects.requireNonNull<CharSequence?>(text)
-            Objects.requireNonNull<Ecc?>(ecl)
+        fun encodeText(text: CharSequence, ecl: Ecc): QrCode {
             val segs: MutableList<QrSegment> = makeSegments(text)
             return encodeSegments(segs, ecl)
         }
@@ -575,11 +569,9 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
          * @throws DataTooLongException if the data fails to fit in the
          * largest version QR Code at the ECL, which means it is too long
          */
-        fun encodeBinary(data: ByteArray?, ecl: Ecc?): QrCode {
-            Objects.requireNonNull<ByteArray?>(data)
-            Objects.requireNonNull<Ecc?>(ecl)
+        fun encodeBinary(data: ByteArray, ecl: Ecc): QrCode {
             val seg = makeBytes(data)
-            return encodeSegments(Arrays.asList<QrSegment?>(seg), ecl)
+            return encodeSegments(mutableListOf(seg), ecl)
         }
 
 
@@ -628,15 +620,13 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
         @JvmOverloads
         fun encodeSegments(
             segs: MutableList<QrSegment>,
-            ecl: Ecc?,
+            ecl: Ecc,
             minVersion: Int = MIN_VERSION,
             maxVersion: Int = MAX_VERSION,
             mask: Int = -1,
             boostEcl: Boolean = true
         ): QrCode {
             var ecl = ecl
-            Objects.requireNonNull<MutableList<QrSegment>>(segs)
-            Objects.requireNonNull<Ecc?>(ecl)
             require(!(!(MIN_VERSION <= minVersion && minVersion <= maxVersion && maxVersion <= MAX_VERSION) || mask < -1 || mask > 7)) { "Invalid value" }
 
 
@@ -672,7 +662,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
             for (seg in segs!!) {
                 bb.appendBits(seg.mode.modeBits, 4)
                 bb.appendBits(seg.numChars, seg.mode.numCharCountBits(version))
-                bb.appendData(seg.data)
+                bb.appendData(seg._data)
             }
             assert(bb.bitLength() == dataUsedBits)
 
@@ -755,9 +745,7 @@ class QrCode(ver: Int, ecl: Ecc?, dataCodewords: ByteArray?, msk: Int) {
 
 
         // Returns the Reed-Solomon error correction codeword for the given data and divisor polynomials.
-        private fun reedSolomonComputeRemainder(data: ByteArray?, divisor: ByteArray?): ByteArray {
-            Objects.requireNonNull<ByteArray?>(data)
-            Objects.requireNonNull<ByteArray?>(divisor)
+        private fun reedSolomonComputeRemainder(data: ByteArray, divisor: ByteArray): ByteArray {
             val result = ByteArray(divisor!!.size)
             for (b in data!!) {  // Polynomial division
                 val factor = (b.toInt() xor result[0].toInt()) and 0xFF
