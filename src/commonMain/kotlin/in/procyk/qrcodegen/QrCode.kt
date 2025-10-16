@@ -144,7 +144,7 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
         var rem = data
         for (i in 0..9) rem = (rem shl 1) xor ((rem ushr 9) * 0x537)
         val bits = (data shl 10 or rem) xor 0x5412 // uint15
-        assert(bits ushr 15 == 0)
+        require(bits ushr 15 == 0)
 
 
         // Draw first copy
@@ -172,7 +172,7 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
         var rem = version // version is uint6, in the range [7, 40]
         for (i in 0..11) rem = (rem shl 1) xor ((rem ushr 11) * 0x1F25)
         val bits = version shl 12 or rem // uint18
-        assert(bits ushr 18 == 0)
+        require(bits ushr 18 == 0)
 
 
         // Draw two copies
@@ -243,7 +243,12 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
                 k += dat.size
                 val block = dat.copyOf(shortBlockLen + 1)
                 val ecc: ByteArray = reedSolomonComputeRemainder(dat, rsDiv)
-                System.arraycopy(ecc, 0, block, block.size - blockEccLen, ecc.size)
+                ecc.copyInto(
+                    destination = block,
+                    destinationOffset = block.size - blockEccLen,
+                    startIndex = 0,
+                    endIndex = ecc.size
+                )
                 blocks[i] = block
                 i++
             }
@@ -294,7 +299,7 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
             }
             right -= 2
         }
-        assert(i == data.size * 8)
+        require(i == data.size * 8)
     }
 
 
@@ -390,9 +395,9 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
             val total = size * size // Note that size is odd, so dark/total != 1/2
             // Compute the smallest integer k >= 0 such that (45-5k)% <= dark/total <= (55+5k)%
             val k = (abs(dark * 20 - total * 10) + total - 1) / total - 1
-            assert(0 <= k && k <= 9)
+            require(0 <= k && k <= 9)
             result += k * PENALTY_N4
-            assert(
+            require(
                 0 <= result && result <= 2568888 // Non-tight upper bound based on default values of PENALTY_N1, ..., N4
             )
             return result
@@ -424,7 +429,7 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
     // returns either 0, 1, or 2. A helper function for getPenaltyScore().
     private fun finderPenaltyCountPatterns(runHistory: IntArray): Int {
         val n = runHistory[1]
-        assert(n <= size * 3)
+        require(n <= size * 3)
         val core = n > 0 && runHistory[2] == n && runHistory[3] == n * 3 && runHistory[4] == n && runHistory[5] == n
         return ((if (core && runHistory[0] >= n * 4 && runHistory[6] >= n) 1 else 0)
                 + (if (core && runHistory[6] >= n * 4 && runHistory[0] >= n) 1 else 0))
@@ -453,7 +458,12 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
         var currentRunLength = currentRunLength
         if (runHistory[0] == 0) currentRunLength += size // Add light border to initial run
 
-        System.arraycopy(runHistory, 0, runHistory, 1, runHistory.size - 1)
+        runHistory.copyInto(
+            destination = runHistory,
+            destinationOffset = 1,
+            startIndex = 0,
+            endIndex = runHistory.size - 1
+        )
         runHistory[0] = currentRunLength
     }
 
@@ -504,7 +514,7 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
                 applyMask(i) // Undoes the mask due to XOR
             }
         }
-        assert(0 <= msk && msk <= 7)
+        require(0 <= msk && msk <= 7)
         mask = msk
         applyMask(msk) // Apply the final choice of mask
         drawFormatBits(msk) // Overwrite old format bits
@@ -617,7 +627,6 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
          * @throws DataTooLongException if the segments fail to fit in the
          * largest version QR Code at the ECL, which means they are too long
          */
-        @JvmOverloads
         fun encodeSegments(
             segs: MutableList<QrSegment>,
             ecl: Ecc,
@@ -643,12 +652,12 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
                 if (version >= maxVersion) {  // All versions in the range could not fit the given data
                     var msg = "Segment too long"
                     if (dataUsedBits != -1) msg =
-                        String.format("Data length = %d bits, Max capacity = %d bits", dataUsedBits, dataCapacityBits)
+                        "Data length = $dataUsedBits bits, Max capacity = $dataCapacityBits bits"
                     throw DataTooLongException(msg)
                 }
                 version++
             }
-            assert(dataUsedBits != -1)
+            require(dataUsedBits != -1)
 
 
             // Increase the error correction level while the data still fits in the current version number
@@ -664,15 +673,15 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
                 bb.appendBits(seg.numChars, seg.mode.numCharCountBits(version))
                 bb.appendData(seg._data)
             }
-            assert(bb.bitLength() == dataUsedBits)
+            require(bb.bitLength() == dataUsedBits)
 
 
             // Add terminator and pad up to a byte if applicable
             val dataCapacityBits: Int = Companion.getNumDataCodewords(version, ecl!!) * 8
-            assert(bb.bitLength() <= dataCapacityBits)
+            require(bb.bitLength() <= dataCapacityBits)
             bb.appendBits(0, min(4, dataCapacityBits - bb.bitLength()))
             bb.appendBits(0, (8 - bb.bitLength() % 8) % 8)
-            assert(bb.bitLength() % 8 == 0)
+            require(bb.bitLength() % 8 == 0)
 
 
             // Pad with alternating bytes until data capacity is reached
@@ -713,7 +722,7 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
                 // The two lines above are equivalent to: result -= (25 * numAlign - 10) * numAlign - 55;
                 if (ver >= 7) result -= 6 * 3 * 2 // Subtract version information
             }
-            assert(208 <= result && result <= 29648)
+            require(208 <= result && result <= 29648)
             return result
         }
 
@@ -749,7 +758,12 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
             val result = ByteArray(divisor!!.size)
             for (b in data!!) {  // Polynomial division
                 val factor = (b.toInt() xor result[0].toInt()) and 0xFF
-                System.arraycopy(result, 1, result, 0, result.size - 1)
+                result.copyInto(
+                    destination = result,
+                    destinationOffset = 0,
+                    startIndex = 1,
+                    endIndex = result.size
+                )
                 result[result.size - 1] = 0
                 for (i in result.indices) result[i] =
                     (result[i].toInt() xor reedSolomonMultiply(divisor[i].toInt() and 0xFF, factor)).toByte()
@@ -761,14 +775,14 @@ class QrCode(ver: Int, ecl: Ecc, dataCodewords: ByteArray, msk: Int) {
         // Returns the product of the two given field elements modulo GF(2^8/0x11D). The arguments and result
         // are unsigned 8-bit integers. This could be implemented as a lookup table of 256*256 entries of uint8.
         private fun reedSolomonMultiply(x: Int, y: Int): Int {
-            assert(x shr 8 == 0 && y shr 8 == 0)
+            require(x shr 8 == 0 && y shr 8 == 0)
             // Russian peasant multiplication
             var z = 0
             for (i in 7 downTo 0) {
                 z = (z shl 1) xor ((z ushr 7) * 0x11D)
                 z = z xor ((y ushr i) and 1) * x
             }
-            assert(z ushr 8 == 0)
+            require(z ushr 8 == 0)
             return z
         }
 

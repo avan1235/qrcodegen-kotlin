@@ -22,11 +22,13 @@
  */
 package `in`.procyk.qrcodegen
 
+import de.cketti.codepoints.CodePoints
+import de.cketti.codepoints.codePointCount
+import de.cketti.codepoints.forEachCodePointIndexed
 import `in`.procyk.qrcodegen.QrSegment.Companion.getTotalBits
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeAlphanumeric
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeBytes
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeNumeric
-import kotlin.text.Charsets.UTF_8
 
 /**
  * Splits text into optimal segments and encodes kanji segments.
@@ -83,7 +85,7 @@ object QrSegmentAdvanced {
             if (version >= maxVersion) {  // All versions in the range could not fit the given text
                 var msg = "Segment too long"
                 if (dataUsedBits != -1) msg =
-                    String.format("Data length = %d bits, Max capacity = %d bits", dataUsedBits, dataCapacityBits)
+                    "Data length = $dataUsedBits bits, Max capacity = $dataCapacityBits bits"
                 throw DataTooLongException(msg)
             }
             version++
@@ -117,7 +119,7 @@ object QrSegmentAdvanced {
         val headCosts = IntArray(numModes)
         for (i in 0..<numModes) {
             headCosts[i] = (4 + modeTypes[i]!!.numCharCountBits(version)) * 6
-            assert(0 <= headCosts[i] && headCosts[i] <= (4 + 16) * 6)
+            require(0 <= headCosts[i] && headCosts[i] <= (4 + 16) * 6)
         }
 
 
@@ -130,7 +132,7 @@ object QrSegmentAdvanced {
         // At the beginning of each iteration of the loop below,
         // prevCosts[j] is the exact minimum number of 1/6 bits needed to
         // encode the entire string prefix of length i, and end in modeTypes[j]
-        var prevCosts = headCosts.clone()
+        var prevCosts = headCosts.copyOf()
 
 
         // Calculate costs using dynamic programming
@@ -171,7 +173,7 @@ object QrSegmentAdvanced {
 
             // A non-tight upper bound is when each of 7089 characters switches to
             // byte mode (4-bit header + 16-bit count) and requires 4 bytes in UTF-8
-            for (cost in curCosts) assert(0 <= cost && cost <= (4 + 16 + 32) * 6 * 7089)
+            for (cost in curCosts) require(0 <= cost && cost <= (4 + 16 + 32) * 6 * 7089)
             prevCosts = curCosts
         }
 
@@ -222,8 +224,8 @@ object QrSegmentAdvanced {
                 i++
                 continue
             }
-            val s = String(codePoints, start, i - start)
-            if (curMode == QrSegment.Mode.BYTE) result.add(makeBytes(s.toByteArray(UTF_8)))
+            val s = CodePoints.toString(*codePoints.sliceArray(start..<i))
+            if (curMode == QrSegment.Mode.BYTE) result.add(makeBytes(s.encodeToByteArray()))
             else if (curMode == QrSegment.Mode.NUMERIC) result.add(makeNumeric(s))
             else if (curMode == QrSegment.Mode.ALPHANUMERIC) result.add(makeAlphanumeric(s))
             else if (curMode == QrSegment.Mode.KANJI) result.add(makeKanji(s))
@@ -239,9 +241,10 @@ object QrSegmentAdvanced {
     // Returns a new array of Unicode code points (effectively
     // UTF-32 / UCS-4) representing the given UTF-16 string.
     private fun toCodePoints(s: CharSequence): IntArray {
-        val result = s.codePoints().toArray()
+        val result = IntArray(s.codePointCount()) { 0 }
+        s.forEachCodePointIndexed { index, codePoint -> result[index] = codePoint }
         for (c in result) {
-            require(!Character.isSurrogate(c.toChar())) { "Invalid UTF-16 string" }
+            require(!c.toChar().isSurrogate()) { "Invalid UTF-16 string" }
         }
         return result
     }
@@ -273,8 +276,8 @@ object QrSegmentAdvanced {
      */
     fun makeKanji(text: CharSequence): QrSegment {
         val bb = BitBuffer()
-        text!!.chars().forEachOrdered {
-            val `val` = UNICODE_TO_QR_KANJI[it].toInt()
+        text.forEach {
+            val `val` = UNICODE_TO_QR_KANJI[it.code].toInt()
             require(`val` != -1) { "String contains non-kanji-mode characters" }
             bb.appendBits(`val`, 13)
         }
@@ -294,7 +297,7 @@ object QrSegmentAdvanced {
      * @see .makeKanji
      */
     fun isEncodableAsKanji(text: CharSequence): Boolean {
-        return text.chars().allMatch { isKanji(it.toChar().code) }
+        return text.all { isKanji(it.code) }
     }
 
 
@@ -428,7 +431,7 @@ object QrSegmentAdvanced {
                 i += 2
                 continue
             }
-            assert(UNICODE_TO_QR_KANJI[c.code].toInt() == -1)
+            require(UNICODE_TO_QR_KANJI[c.code].toInt() == -1)
             UNICODE_TO_QR_KANJI[c.code] = (i / 2).toShort()
             i += 2
         }

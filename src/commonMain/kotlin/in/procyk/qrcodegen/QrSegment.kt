@@ -23,7 +23,6 @@
 package `in`.procyk.qrcodegen
 
 import kotlin.math.min
-import kotlin.text.Charsets.UTF_8
 
 /**
  * A segment of character/binary/control data in a QR Code symbol.
@@ -100,7 +99,7 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
         /*-- Method --*/ // Returns the bit width of the character count field for a segment in this mode
         // in a QR Code at the given version number. The result is in the range [0, 16].
         fun numCharCountBits(ver: Int): Int {
-            assert(QrCode.MIN_VERSION <= ver && ver <= QrCode.MAX_VERSION)
+            require(QrCode.MIN_VERSION <= ver && ver <= QrCode.MAX_VERSION)
             return numBitsCharCount[(ver + 7) / 17]
         }
     }
@@ -185,7 +184,7 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             val result: MutableList<QrSegment> = ArrayList<QrSegment>()
             if (text == "") ; else if (isNumeric(text)) result.add(makeNumeric(text))
             else if (isAlphanumeric(text)) result.add(makeAlphanumeric(text))
-            else result.add(makeBytes(text.toString().toByteArray(UTF_8)))
+            else result.add(makeBytes(text.toString().encodeToByteArray()))
             return result
         }
 

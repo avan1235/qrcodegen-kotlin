@@ -38,7 +38,7 @@ class BitBuffer {
      * @return the length of this sequence
      */
     fun bitLength(): Int {
-        assert(bitLength >= 0)
+        require(bitLength >= 0)
         return bitLength
     }
 
