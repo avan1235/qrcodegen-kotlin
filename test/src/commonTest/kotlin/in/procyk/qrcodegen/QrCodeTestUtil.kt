@@ -10,7 +10,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 internal fun assertTestData(name: String) {
-    val testData = readQrCodeTestData("src/testData/$name")
+    val testData = readQrCodeTestData("data/$name")
     val result = runCatching {
         QrCode.encodeText(testData.inputText, QrCode.Ecc.valueOf(testData.inputEccName))
     }
@@ -36,7 +36,6 @@ internal fun assertTestData(name: String) {
         }
     }
 }
-
 
 private fun readQrCodeTestData(path: String): QrCodeTestData =
     Json.decodeFromString(readString(path))

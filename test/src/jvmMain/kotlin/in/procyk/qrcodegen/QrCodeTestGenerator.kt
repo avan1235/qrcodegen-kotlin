@@ -2,72 +2,69 @@ package `in`.procyk.qrcodegen
 
 import io.nayuki.qrcodegen.QrCode
 import kotlinx.serialization.json.Json
-import org.junit.Ignore
 import kotlin.io.path.*
-import kotlin.test.Test
 
-@Ignore("This is a manual test which generates reference data.")
-class QrCodeTestGenerator {
+fun main() {
+    generateTestData()
+    generateTests()
+}
 
-    @Test
-    fun `generate test data`() {
-        var idx = 0
-        QrCode.Ecc.entries.forEach { ecc ->
-            INPUTS.forEach { input ->
-                val data = runCatching {
-                    QrCode.encodeText(input, ecc).run {
-                        QrCodeTestData.Success(
-                            inputText = input,
-                            inputEccName = ecc.name,
-                            expectedSize = size,
-                            expectedMask = mask,
-                            expectedErrorCorrectionLevel = errorCorrectionLevel.name,
-                            expectedData = BooleanArray(size * size) { getModule(it % size, it / size) }
-                                .joinToString("") { if (it) "1" else "0" },
-                        )
-                    }
-                }.fold(
-                    onSuccess = { it },
-                    onFailure = {
-                        QrCodeTestData.Failure(
-                            inputText = input,
-                            inputEccName = ecc.name,
-                            message = it.message,
-                        )
-                    }
-                )
-                val text = PrettyPrintJson.encodeToString<QrCodeTestData>(data)
-                Path("src/testData/test${idx++}.json")
-                    .apply { parent.createDirectories() }
-                    .writeText(text)
-            }
+private fun generateTestData() {
+    var idx = 0
+    QrCode.Ecc.entries.forEach { ecc ->
+        INPUTS.forEach { input ->
+            val data = runCatching {
+                QrCode.encodeText(input, ecc).run {
+                    QrCodeTestData.Success(
+                        inputText = input,
+                        inputEccName = ecc.name,
+                        expectedSize = size,
+                        expectedMask = mask,
+                        expectedErrorCorrectionLevel = errorCorrectionLevel.name,
+                        expectedData = BooleanArray(size * size) { getModule(it % size, it / size) }
+                            .joinToString("") { if (it) "1" else "0" },
+                    )
+                }
+            }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    QrCodeTestData.Failure(
+                        inputText = input,
+                        inputEccName = ecc.name,
+                        message = it.message,
+                    )
+                }
+            )
+            val text = PrettyPrintJson.encodeToString<QrCodeTestData>(data)
+            Path("data/test${idx++}.json")
+                .apply { parent.createDirectories() }
+                .writeText(text)
         }
     }
+}
 
-    @Test
-    fun `generate tests`() = buildString {
+private fun generateTests() = buildString {
+    """
+    package `in`.procyk.qrcodegen
+    
+    import kotlin.test.Test
+
+    class QRCodeTest {
+    """.trimIndent().let(::appendLine)
+
+    val data = Path("data").listDirectoryEntries("test[0-9]*.json")
+        .sortedBy { it.nameWithoutExtension.removePrefix("test").toInt() }
+
+    data.forEach { path ->
         """
-        package `in`.procyk.qrcodegen
-        
-        import kotlin.test.Test
-
-        class QRCodeTest {
-        """.trimIndent().let(::appendLine)
-
-        val testData = Path("src/testData").listDirectoryEntries("test[0-9]*.json")
-            .sortedBy { it.nameWithoutExtension.removePrefix("test").toInt() }
-
-        testData.forEach { path ->
-            """
        |
        |    @Test
        |    fun ${path.nameWithoutExtension}() = assertTestData("${path.name}")
             """.trimMargin().let(::appendLine)
-        }
+    }
 
-        appendLine("}")
-    }.let(Path("src/commonTest/kotlin/in/procyk/qrcodegen/QrCodeTest.kt")::writeText)
-}
+    appendLine("}")
+}.let(Path("src/commonTest/kotlin/in/procyk/qrcodegen/QrCodeTest.kt")::writeText)
 
 private val PrettyPrintJson = Json { prettyPrint = true }
 
