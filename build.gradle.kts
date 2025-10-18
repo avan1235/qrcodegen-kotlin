@@ -8,5 +8,6 @@ plugins {
 
 allprojects {
     group = "in.procyk"
-    version = "0.0.1"
+    version = providers.gradleProperty("version").getOrElse("dev")
 }
+
