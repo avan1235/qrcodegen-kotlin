@@ -11,31 +11,31 @@ fun main() {
 }
 
 private fun generateTextTestData(idx: Int): Int = generateTestData(
-    input = TEXT_INPUTS,
+    data = TEXT_INPUTS,
     f = { input, ecc -> QrCodeTestData.Input.Text(input, ecc.name) },
     g = { text, ecc -> QrCode.encodeText(text, ecc) },
     idx = idx,
 )
 
 private fun generateBinaryTestData(idx: Int): Int = generateTestData(
-    input = BINARY_INPUTS,
+    data = BINARY_INPUTS,
     f = { input, ecc -> QrCodeTestData.Input.Binary(input.toList(), ecc.name) },
     g = { bytes, ecc -> QrCode.encodeBinary(bytes, ecc) },
     idx = idx,
 )
 
 private fun <T> generateTestData(
-    input: List<T>,
+    data: List<T>,
     f: (T, QrCode.Ecc) -> QrCodeTestData.Input,
     g: (T, QrCode.Ecc) -> QrCode,
     idx: Int,
 ): Int {
     var idx = idx
-    QrCode.Ecc.entries.forEach { ecc ->
-        input.forEach { text ->
-            val input = f(text, ecc)
+    data.forEach { data ->
+        QrCode.Ecc.entries.forEach { ecc ->
+            val input = f(data, ecc)
             val data = runCatching {
-                g(text, ecc).run {
+                g(data, ecc).run {
                     QrCodeTestData.Success(
                         input = input,
                         expectedSize = size,
