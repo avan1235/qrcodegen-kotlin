@@ -19,7 +19,7 @@ private fun generateTextTestData(idx: Int): Int = generateTestData(
 
 private fun generateBinaryTestData(idx: Int): Int = generateTestData(
     data = BINARY_INPUTS,
-    f = { input, ecc -> QrCodeTestData.Input.Binary(input.toList(), ecc.name) },
+    f = { input, ecc -> QrCodeTestData.Input.Binary(input.asList(), ecc.name) },
     g = { bytes, ecc -> QrCode.encodeBinary(bytes, ecc) },
     idx = idx,
 )
@@ -208,4 +208,6 @@ private val BINARY_INPUTS: List<ByteArray> = listOf(
     byteArrayOf(0),
     byteArrayOf(127),
     byteArrayOf(-128),
+    ByteArray(2953) { it.toByte() },
+    ByteArray(2954) { it.toByte() },
 )
