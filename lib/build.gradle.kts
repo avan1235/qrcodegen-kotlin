@@ -56,3 +56,9 @@ mavenPublishing {
         }
     }
 }
+
+afterEvaluate {
+    tasks.withType<AbstractPublishToMaven>().configureEach {
+        dependsOn(":test:allTests")
+    }
+}
