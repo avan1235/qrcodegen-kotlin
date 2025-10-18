@@ -7,7 +7,7 @@ pluginManagement {
 
 rootProject.name = "qrcodegen"
 
-include(":core")
+include(":lib")
 include(":test")
 
 // https://docs.gradle.org/8.11.1/userguide/configuration_cache.html#config_cache:stable

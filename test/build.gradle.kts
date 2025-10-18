@@ -18,7 +18,7 @@ kotlin {
 
     sourceSets {
         commonTest.dependencies {
-            implementation(project(":core"))
+            implementation(project(":lib"))
             implementation(kotlin("test"))
             implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
         }
