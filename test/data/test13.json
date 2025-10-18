@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "안녕하세요",
-    "inputEccName": "LOW",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "안녕하세요",
+        "eccName": "LOW"
+    },
     "expectedSize": 21,
     "expectedMask": 6,
     "expectedErrorCorrectionLevel": "LOW",

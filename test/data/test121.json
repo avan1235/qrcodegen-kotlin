@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "{\"key\":\"value\"}",
-    "inputEccName": "MEDIUM",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "{\"key\":\"value\"}",
+        "eccName": "MEDIUM"
+    },
     "expectedSize": 25,
     "expectedMask": 4,
     "expectedErrorCorrectionLevel": "QUARTILE",

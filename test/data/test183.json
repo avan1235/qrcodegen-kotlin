@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "inputEccName": "QUARTILE",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "eccName": "QUARTILE"
+    },
     "expectedSize": 49,
     "expectedMask": 1,
     "expectedErrorCorrectionLevel": "QUARTILE",

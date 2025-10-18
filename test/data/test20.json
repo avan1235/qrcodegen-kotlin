@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "\t",
-    "inputEccName": "LOW",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "\t",
+        "eccName": "LOW"
+    },
     "expectedSize": 21,
     "expectedMask": 0,
     "expectedErrorCorrectionLevel": "HIGH",

@@ -915,4 +915,52 @@ class QRCodeTest {
 
     @Test
     fun test303() = assertTestData("test303.json")
+
+    @Test
+    fun test304() = assertTestData("test304.json")
+
+    @Test
+    fun test305() = assertTestData("test305.json")
+
+    @Test
+    fun test306() = assertTestData("test306.json")
+
+    @Test
+    fun test307() = assertTestData("test307.json")
+
+    @Test
+    fun test308() = assertTestData("test308.json")
+
+    @Test
+    fun test309() = assertTestData("test309.json")
+
+    @Test
+    fun test310() = assertTestData("test310.json")
+
+    @Test
+    fun test311() = assertTestData("test311.json")
+
+    @Test
+    fun test312() = assertTestData("test312.json")
+
+    @Test
+    fun test313() = assertTestData("test313.json")
+
+    @Test
+    fun test314() = assertTestData("test314.json")
+
+    @Test
+    fun test315() = assertTestData("test315.json")
+
+    @Test
+    fun test316() = assertTestData("test316.json")
+
+    @Test
+    fun test317() = assertTestData("test317.json")
+
+    @Test
+    fun test318() = assertTestData("test318.json")
+
+    @Test
+    fun test319() = assertTestData("test319.json")
 }

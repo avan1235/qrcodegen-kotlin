@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "0123456789",
-    "inputEccName": "LOW",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "0123456789",
+        "eccName": "LOW"
+    },
     "expectedSize": 21,
     "expectedMask": 6,
     "expectedErrorCorrectionLevel": "HIGH",

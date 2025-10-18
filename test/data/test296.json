@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "geo:37.7749,-122.4194",
-    "inputEccName": "HIGH",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "geo:37.7749,-122.4194",
+        "eccName": "HIGH"
+    },
     "expectedSize": 29,
     "expectedMask": 6,
     "expectedErrorCorrectionLevel": "HIGH",

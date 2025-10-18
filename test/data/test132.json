@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nEND:VCARD",
-    "inputEccName": "MEDIUM",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nEND:VCARD",
+        "eccName": "MEDIUM"
+    },
     "expectedSize": 33,
     "expectedMask": 6,
     "expectedErrorCorrectionLevel": "QUARTILE",

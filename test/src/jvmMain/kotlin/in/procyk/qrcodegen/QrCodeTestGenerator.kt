@@ -5,32 +5,50 @@ import kotlinx.serialization.json.Json
 import kotlin.io.path.*
 
 fun main() {
-    generateTestData()
+    val idx = generateTextTestData(idx = 0)
+    generateBinaryTestData(idx = idx)
     generateTests()
 }
 
-private fun generateTestData() {
-    var idx = 0
+private fun generateTextTestData(idx: Int): Int = generateTestData(
+    input = TEXT_INPUTS,
+    f = { input, ecc -> QrCodeTestData.Input.Text(input, ecc.name) },
+    g = { text, ecc -> QrCode.encodeText(text, ecc) },
+    idx = idx,
+)
+
+private fun generateBinaryTestData(idx: Int): Int = generateTestData(
+    input = BINARY_INPUTS,
+    f = { input, ecc -> QrCodeTestData.Input.Binary(input.toList(), ecc.name) },
+    g = { bytes, ecc -> QrCode.encodeBinary(bytes, ecc) },
+    idx = idx,
+)
+
+private fun <T> generateTestData(
+    input: List<T>,
+    f: (T, QrCode.Ecc) -> QrCodeTestData.Input,
+    g: (T, QrCode.Ecc) -> QrCode,
+    idx: Int,
+): Int {
+    var idx = idx
     QrCode.Ecc.entries.forEach { ecc ->
-        INPUTS.forEach { input ->
+        input.forEach { text ->
+            val input = f(text, ecc)
             val data = runCatching {
-                QrCode.encodeText(input, ecc).run {
+                g(text, ecc).run {
                     QrCodeTestData.Success(
-                        inputText = input,
-                        inputEccName = ecc.name,
+                        input = input,
                         expectedSize = size,
                         expectedMask = mask,
                         expectedErrorCorrectionLevel = errorCorrectionLevel.name,
-                        expectedData = BooleanArray(size * size) { getModule(it % size, it / size) }
-                            .joinToString("") { if (it) "1" else "0" },
+                        expectedData = List(size * size) { getModule(it % size, it / size) },
                     )
                 }
             }.fold(
                 onSuccess = { it },
                 onFailure = {
                     QrCodeTestData.Failure(
-                        inputText = input,
-                        inputEccName = ecc.name,
+                        input = input,
                         message = it.message,
                     )
                 }
@@ -41,6 +59,7 @@ private fun generateTestData() {
                 .writeText(text)
         }
     }
+    return idx
 }
 
 private fun generateTests() = buildString {
@@ -68,7 +87,7 @@ private fun generateTests() = buildString {
 
 private val PrettyPrintJson = Json { prettyPrint = true }
 
-private val INPUTS = listOf(
+private val TEXT_INPUTS = listOf(
     // Basic scenarios
     "",                                          // Empty string
     "Hello World",                               // Simple ASCII text
@@ -182,4 +201,11 @@ private val INPUTS = listOf(
     // Mixed scripts
     "Hello мир 世界 🌍",                          // Multiple scripts and emoji
     "test123テストשלום",                          // Latin, numeric, Japanese, Hebrew
+)
+
+private val BINARY_INPUTS: List<ByteArray> = listOf(
+    byteArrayOf(),
+    byteArrayOf(0),
+    byteArrayOf(127),
+    byteArrayOf(-128),
 )

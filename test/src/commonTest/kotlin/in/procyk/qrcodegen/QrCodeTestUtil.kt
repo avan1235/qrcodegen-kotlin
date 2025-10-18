@@ -1,5 +1,8 @@
 package `in`.procyk.qrcodegen
 
+import `in`.procyk.qrcodegen.QrCode.Companion.encodeBinary
+import `in`.procyk.qrcodegen.QrCode.Companion.encodeText
+import `in`.procyk.qrcodegen.QrCodeTestData.Input
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
@@ -12,7 +15,11 @@ import kotlin.test.assertTrue
 internal fun assertTestData(name: String) {
     val testData = readQrCodeTestData("data/$name")
     val result = runCatching {
-        QrCode.encodeText(testData.inputText, QrCode.Ecc.valueOf(testData.inputEccName))
+        when (val input = testData.input) {
+            is Input.Binary -> encodeBinary(input.bytes.toTypedArray().toByteArray(), QrCode.Ecc.valueOf(input.eccName))
+            is Input.Text -> encodeText(input.text, QrCode.Ecc.valueOf(input.eccName))
+        }
+
     }
     when (testData) {
         is QrCodeTestData.Failure -> result.run {
@@ -31,8 +38,8 @@ internal fun assertTestData(name: String) {
             assertEquals(testData.expectedSize, code.size)
             assertEquals(testData.expectedMask, code.mask)
             assertEquals(testData.expectedErrorCorrectionLevel, code.errorCorrectionLevel.name)
-            val data = BooleanArray(code.size * code.size) { code.getModule(it % code.size, it / code.size) }
-            assertEquals(testData.expectedData, data.joinToString("") { if (it) "1" else "0" })
+            val data = List(code.size * code.size) { code.getModule(it % code.size, it / code.size) }
+            assertEquals(testData.expectedData, data)
         }
     }
 }

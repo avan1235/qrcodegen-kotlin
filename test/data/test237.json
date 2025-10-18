@@ -1,7 +1,10 @@
 {
     "type": "in.procyk.qrcodegen.QrCodeTestData.Success",
-    "inputText": "Привет мир",
-    "inputEccName": "HIGH",
+    "input": {
+        "type": "in.procyk.qrcodegen.QrCodeTestData.Input.Text",
+        "text": "Привет мир",
+        "eccName": "HIGH"
+    },
     "expectedSize": 29,
     "expectedMask": 1,
     "expectedErrorCorrectionLevel": "HIGH",
