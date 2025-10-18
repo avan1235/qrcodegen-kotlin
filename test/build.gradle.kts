@@ -3,9 +3,6 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-group = "in.procyk"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
 }
