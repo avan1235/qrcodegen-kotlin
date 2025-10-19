@@ -30,28 +30,16 @@ package `in`.procyk.qrcodegen
 /**
  * Thrown when the supplied data does not fit any QR Code version. Ways to handle this exception include:
  *
- *  *
- *
- *Decrease the error correction level if it was greater than `Ecc.LOW`.
- *  *
- *
- *If the advanced `encodeSegments()` function with 6 arguments or the
+ *  * Decrease the error correction level if it was greater than `Ecc.LOW`.
+ *  * If the advanced `encodeSegments()` function with 6 arguments or the
  * `makeSegmentsOptimally()` function was called, then increase the maxVersion argument
  * if it was less than [QrCode.MAX_VERSION]. (This advice does not apply to the other
  * factory functions because they search all versions up to `QrCode.MAX_VERSION`.)
- *  *
- *
- *Split the text data into better or optimal segments in order to reduce the number of
+ *  * Split the text data into better or optimal segments in order to reduce the number of
  * bits required. (See [     QrSegmentAdvanced.makeSegmentsOptimally()][QrSegmentAdvanced.makeSegmentsOptimally].)
- *  *
- *
- *Change the text or binary data to be shorter.
- *  *
- *
- *Change the text to fit the character set of a particular segment mode (e.g. alphanumeric).
- *  *
- *
- *Propagate the error upward to the caller/user.
+ *  * Change the text or binary data to be shorter.
+ *  * Change the text to fit the character set of a particular segment mode (e.g. alphanumeric).
+ *  * Propagate the error upward to the caller/user.
  *
  * @see QrCode.encodeText
  * @see QrCode.encodeBinary
