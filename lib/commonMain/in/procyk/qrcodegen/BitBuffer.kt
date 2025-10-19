@@ -31,11 +31,12 @@ import dev.dokky.bitvector.MutableBitVector
 /**
  * An appendable sequence of bits (0s and 1s). Mainly used by [QrSegment].
  */
-class BitBuffer {
-    private var data: MutableBitVector = MutableBitVector()
+class BitBuffer private constructor(
+    private val data: MutableBitVector,
+    private var bitLength: Int, // Non-negative
+) {
 
-    private var bitLength = 0 // Non-negative
-
+    constructor() : this(data = MutableBitVector(), bitLength = 0)
 
     /**
      * Returns the length of this sequence, which is a non-negative value.
@@ -62,19 +63,19 @@ class BitBuffer {
     /**
      * Appends the specified number of low-order bits of the specified value to this
      * buffer. Requires 0 &#x2264; len &#x2264; 31 and 0 &#x2264; val &lt; 2<sup>len</sup>.
-     * @param val the value to append
+     * @param value the value to append
      * @param len the number of low-order bits in the value to take
      * @throws IllegalArgumentException if the value or number of bits is out of range
      * @throws IllegalStateException if appending the data
      * would make bitLength exceed Integer.MAX_VALUE
      */
-    fun appendBits(`val`: Int, len: Int) {
-        require(!(len !in 0..31 || `val` ushr len != 0)) { "Value out of range" }
+    fun appendBits(value: Int, len: Int) {
+        require(!(len !in 0..31 || value ushr len != 0)) { "Value out of range" }
         check(Int.MAX_VALUE - bitLength >= len) { "Maximum length reached" }
         var i = len - 1
         while (i >= 0) {
             // Append bit by bit
-            data[bitLength] = QrCode.getBit(`val`, i)
+            data[bitLength] = QrCode.getBit(value, i)
             i--
             bitLength++
         }
@@ -104,8 +105,6 @@ class BitBuffer {
      * Returns a new copy of this buffer.
      * @return a new copy of this buffer (not `null`)
      */
-    fun clone(): BitBuffer = BitBuffer().also {
-        it.bitLength = bitLength
-        it.data = data.copy()
-    }
+    fun clone(): BitBuffer =
+        BitBuffer(data = data.copy(), bitLength = bitLength)
 }
