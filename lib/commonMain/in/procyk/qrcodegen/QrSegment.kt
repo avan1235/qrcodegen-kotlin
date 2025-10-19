@@ -41,67 +41,60 @@ import kotlin.math.min
  * Any segment longer than this is meaningless for the purpose of generating QR Codes.
  * This class can represent kanji mode segments, but provides no help in encoding them
  * - see [QrSegmentAdvanced] for full kanji support.
+ *
+ * @constructor Constructs a QR Code segment with the specified attributes and data.
+ * The character count (numCh) must agree with the mode and the bit buffer length,
+ * but the constraint isn't checked. The specified bit buffer is cloned and stored.
+ * @param mode mode indicator of this segment (not `null`)
+ * @param numChars The length of this segment's unencoded data. Measured in characters for
+ * numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode.
+ * Always zero or positive. Not the same as the data's bit length.
+ * @param data the data bits (not `null`)
+ * @throws NullPointerException if the mode or data is `null`
+ * @throws IllegalArgumentException if the character count is negative
  */
-class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
-    /*---- Instance fields ----*/
-    /** The mode indicator of this segment. Not `null`.  */
-    val mode: Mode
+class QrSegment(
+    val mode: Mode,
+    val numChars: Int,
+    data: BitBuffer,
+) {
 
-    /** The length of this segment's unencoded data. Measured in characters for
-     * numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode.
-     * Always zero or positive. Not the same as the data's bit length.  */
-    val numChars: Int
+    /**
+     * The data bits of this segment. Not null. Accessed through getData().
+     */
+    private val _data: BitBuffer
 
-    // The data bits of this segment. Not null. Accessed through getData().
-    val _data: BitBuffer
-
-
-    /*---- Methods ----*/
     /**
      * Returns the data bits of this segment.
      * @return a new copy of the data bits (not `null`)
      */
-    fun getData(): BitBuffer {
-        return _data.clone() // Make defensive copy
-    }
+    val data: BitBuffer
+        get() = _data.clone() // Make defensive copy
 
-
-    /*---- Constructor (low level) ----*/ /**
-     * Constructs a QR Code segment with the specified attributes and data.
-     * The character count (numCh) must agree with the mode and the bit buffer length,
-     * but the constraint isn't checked. The specified bit buffer is cloned and stored.
-     * @param md the mode (not `null`)
-     * @param numCh the data length in characters or bytes, which is non-negative
-     * @param data the data bits (not `null`)
-     * @throws NullPointerException if the mode or data is `null`
-     * @throws IllegalArgumentException if the character count is negative
-     */
     init {
-        mode = md
-        require(numCh >= 0) { "Invalid value" }
-        numChars = numCh
+        require(numChars >= 0) { "Invalid value" }
         this._data = data.clone() // Make defensive copy
     }
 
-
-    /*---- Public helper enumeration ----*/
     /**
      * Describes how a segment's data bits are interpreted.
+     *
+     * @param modeBits The mode indicator bits, which is a uint4 value (range 0 to 15).
+     * @param numBitsCharCount Number of character count bits for three different version ranges.
      */
-    enum class Mode(// The mode indicator bits, which is a uint4 value (range 0 to 15).
-        val modeBits: Int, // Number of character count bits for three different version ranges.
+    enum class Mode(
+        val modeBits: Int,
         private vararg val numBitsCharCount: Int
     ) {
-        /*-- Constants --*/
         NUMERIC(0x1, 10, 12, 14),
         ALPHANUMERIC(0x2, 9, 11, 13),
         BYTE(0x4, 8, 16, 16),
         KANJI(0x8, 8, 10, 12),
-        ECI(0x7, 0, 0, 0); /*-- Fields --*/
-
-
-        /*-- Method --*/ // Returns the bit width of the character count field for a segment in this mode
-        // in a QR Code at the given version number. The result is in the range [0, 16].
+        ECI(0x7, 0, 0, 0);
+        /**
+         * Returns the bit width of the character count field for a segment in this mode
+         * in a QR Code at the given version number. The result is in the range [0, 16].
+         */
         fun numCharCountBits(ver: Int): Int {
             require(QrCode.MIN_VERSION <= ver && ver <= QrCode.MAX_VERSION)
             return numBitsCharCount[(ver + 7) / 17]
@@ -109,7 +102,6 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
     }
 
     companion object {
-        /*---- Static factory functions (mid level) ----*/
         /**
          * Returns a segment representing the specified binary data
          * encoded in byte mode. All input byte arrays are acceptable.
@@ -124,7 +116,6 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             for (b in data) bb.appendBits(b.toInt() and 0xFF, 8)
             return QrSegment(Mode.BYTE, data.size, bb)
         }
-
 
         /**
          * Returns a segment representing the specified string of decimal digits encoded in numeric mode.
@@ -147,7 +138,6 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             return QrSegment(Mode.NUMERIC, digits.length, bb)
         }
 
-
         /**
          * Returns a segment representing the specified text string encoded in alphanumeric mode.
          * The characters allowed are: 0 to 9, A to Z (uppercase only), space,
@@ -161,20 +151,18 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             require(isAlphanumeric(text)) { "String contains unencodable characters in alphanumeric mode" }
 
             val bb = BitBuffer()
-            var i: Int
-            i = 0
+            var i = 0
             while (i <= text.length - 2) {
                 // Process groups of 2
-                var temp: Int = ALPHANUMERIC_CHARSET.indexOf(text.get(i)) * 45
-                temp += ALPHANUMERIC_CHARSET.indexOf(text.get(i + 1))
+                var temp: Int = ALPHANUMERIC_CHARSET.indexOf(text[i]) * 45
+                temp += ALPHANUMERIC_CHARSET.indexOf(text[i + 1])
                 bb.appendBits(temp, 11)
                 i += 2
             }
             if (i < text.length)  // 1 character remaining
-                bb.appendBits(ALPHANUMERIC_CHARSET.indexOf(text.get(i)), 6)
+                bb.appendBits(ALPHANUMERIC_CHARSET.indexOf(text[i]), 6)
             return QrSegment(Mode.ALPHANUMERIC, text.length, bb)
         }
-
 
         /**
          * Returns a list of zero or more segments to represent the specified Unicode text string.
@@ -194,7 +182,6 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             }
             return result
         }
-
 
         /**
          * Returns a segment representing an Extended Channel Interpretation
@@ -217,7 +204,6 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             return QrSegment(Mode.ECI, 0, bb)
         }
 
-
         /**
          * Tests whether the specified string can be encoded as a segment in numeric mode.
          * A string is encodable iff each character is in the range 0 to 9.
@@ -229,7 +215,6 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
         fun isNumeric(text: CharSequence): Boolean {
             return NUMERIC_REGEX.matches(text)
         }
-
 
         /**
          * Tests whether the specified string can be encoded as a segment in alphanumeric mode.
@@ -244,10 +229,11 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             return ALPHANUMERIC_REGEX.matches(text)
         }
 
-
-        // Calculates the number of bits needed to encode the given segments at the given version.
-        // Returns a non-negative number if successful. Otherwise returns -1 if a segment has too
-        // many characters to fit its length field, or the total bits exceeds Integer.MAX_VALUE.
+        /**
+         * Calculates the number of bits needed to encode the given segments at the given version.
+         * Returns a non-negative number if successful. Otherwise returns -1 if a segment has too
+         * many characters to fit its length field, or the total bits exceeds Integer.MAX_VALUE.
+         */
         fun getTotalBits(segs: MutableList<QrSegment>, version: Int): Int {
             var result: Long = 0
             for (seg in segs) {
@@ -260,15 +246,16 @@ class QrSegment(md: Mode, numCh: Int, data: BitBuffer) {
             return result.toInt()
         }
 
-
-        /*---- Constants ----*/ // Describes precisely all strings that are encodable in numeric mode.
+        /** Describes precisely all strings that are encodable in numeric mode. */
         private val NUMERIC_REGEX: Regex = Regex("[0-9]*")
 
-        // Describes precisely all strings that are encodable in alphanumeric mode.
+        /** Describes precisely all strings that are encodable in alphanumeric mode. */
         private val ALPHANUMERIC_REGEX: Regex = Regex("[A-Z0-9 $%*+./:-]*")
 
-        // The set of all legal characters in alphanumeric mode, where
-        // each character value maps to the index in the string.
+        /**
+         * The set of all legal characters in alphanumeric mode, where
+         * each character value maps to the index in the string.
+         */
         const val ALPHANUMERIC_CHARSET: String = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:"
     }
 }
