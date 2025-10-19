@@ -12,8 +12,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-internal fun assertTestData(name: String) {
-    val testData = readQrCodeTestData("data/$name")
+internal fun assertTestData(dir: String, name: String) {
+    val testData = readQrCodeTestData("data/$dir/$name")
     val result = runCatching {
         when (val input = testData.input) {
             is Input.Binary -> encodeBinary(input.bytes.toTypedArray().toByteArray(), QrCode.Ecc.valueOf(input.eccName))

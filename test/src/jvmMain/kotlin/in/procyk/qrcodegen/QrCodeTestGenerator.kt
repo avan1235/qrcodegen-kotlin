@@ -5,32 +5,32 @@ import kotlinx.serialization.json.Json
 import kotlin.io.path.*
 
 fun main() {
-    val idx = generateTextTestData(idx = 0)
-    generateBinaryTestData(idx = idx)
+    generateTextTestData()
+    generateBinaryTestData()
     generateTests()
 }
 
-private fun generateTextTestData(idx: Int): Int = generateTestData(
+private fun generateTextTestData(): Int = generateTestData(
+    dir = "text",
     data = TEXT_INPUTS,
     f = { input, ecc -> QrCodeTestData.Input.Text(input, ecc.name) },
     g = { text, ecc -> QrCode.encodeText(text, ecc) },
-    idx = idx,
 )
 
-private fun generateBinaryTestData(idx: Int): Int = generateTestData(
+private fun generateBinaryTestData(): Int = generateTestData(
+    dir = "binary",
     data = BINARY_INPUTS,
     f = { input, ecc -> QrCodeTestData.Input.Binary(input.asList(), ecc.name) },
     g = { bytes, ecc -> QrCode.encodeBinary(bytes, ecc) },
-    idx = idx,
 )
 
 private fun <T> generateTestData(
+    dir: String,
     data: List<T>,
     f: (T, QrCode.Ecc) -> QrCodeTestData.Input,
     g: (T, QrCode.Ecc) -> QrCode,
-    idx: Int,
 ): Int {
-    var idx = idx
+    var idx = 0
     data.forEach { data ->
         QrCode.Ecc.entries.forEach { ecc ->
             val input = f(data, ecc)
@@ -54,7 +54,7 @@ private fun <T> generateTestData(
                 }
             )
             val text = PrettyPrintJson.encodeToString<QrCodeTestData>(data)
-            Path("data/test${idx++}.json")
+            Path("data/$dir/test${idx++}.json")
                 .apply { parent.createDirectories() }
                 .writeText(text)
         }
@@ -62,28 +62,33 @@ private fun <T> generateTestData(
     return idx
 }
 
-private fun generateTests() = buildString {
-    """
-    package `in`.procyk.qrcodegen
-    
-    import kotlin.test.Test
-
-    class QRCodeTest {
-    """.trimIndent().let(::appendLine)
-
-    val data = Path("data").listDirectoryEntries("test[0-9]*.json")
-        .sortedBy { it.nameWithoutExtension.removePrefix("test").toInt() }
-
-    data.forEach { path ->
-        """
-       |
-       |    @Test
-       |    fun ${path.nameWithoutExtension}() = assertTestData("${path.name}")
+private fun generateTests() {
+    for (dir in listOf("text", "binary")) {
+        val uppercaseDir = dir.replaceFirstChar { it.uppercaseChar() }
+        buildString {
+            """
+           |package `in`.procyk.qrcodegen
+           |
+           |import kotlin.test.Test
+           |
+           |class QRCode${uppercaseDir}Test {
             """.trimMargin().let(::appendLine)
-    }
 
-    appendLine("}")
-}.let(Path("src/commonTest/kotlin/in/procyk/qrcodegen/QrCodeTest.kt")::writeText)
+            val data = Path("data/$dir").listDirectoryEntries("test[0-9]*.json")
+                .sortedBy { it.nameWithoutExtension.removePrefix("test").toInt() }
+
+            data.forEach { path ->
+                """
+           |
+           |    @Test
+           |    fun ${path.nameWithoutExtension}() = assertTestData("$dir", "${path.name}")
+                """.trimMargin().let(::appendLine)
+            }
+
+            appendLine("}")
+        }.let(Path("src/commonTest/kotlin/in/procyk/qrcodegen/QrCode${uppercaseDir}Test.kt")::writeText)
+    }
+}
 
 private val PrettyPrintJson = Json { prettyPrint = true }
 
