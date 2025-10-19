@@ -23,6 +23,8 @@ kotlin {
 
     macosArm64()
 
+    mingwX64()
+
     sourceSets {
         commonTest.dependencies {
             implementation(project(":lib"))
