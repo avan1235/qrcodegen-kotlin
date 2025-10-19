@@ -3,6 +3,7 @@ package `in`.procyk.qrcodegen
 import io.nayuki.qrcodegen.QrCode
 import kotlinx.serialization.json.Json
 import kotlin.io.path.*
+import kotlin.random.Random
 
 fun main() {
     generateTextTestData()
@@ -92,7 +93,15 @@ private fun generateTests() {
 
 private val PrettyPrintJson = Json { prettyPrint = true }
 
-private val TEXT_INPUTS = listOf(
+private val TEXT_RANDOM = Random(42)
+
+private fun randomText(length: Int): String = generateSequence {
+    Char(TEXT_RANDOM.nextInt(Char.MIN_VALUE.code, Char.MAX_VALUE.code + 1))
+}
+    .take(length)
+    .joinToString("")
+
+private val TEXT_INPUTS: List<String> = listOf(
     // Basic scenarios
     "",                                          // Empty string
     "Hello World",                               // Simple ASCII text
@@ -206,7 +215,14 @@ private val TEXT_INPUTS = listOf(
     // Mixed scripts
     "Hello мир 世界 🌍",                          // Multiple scripts and emoji
     "test123テストשלום",                          // Latin, numeric, Japanese, Hebrew
-)
+).let { static ->
+    buildList {
+        addAll(static)
+        repeat(1_000) { add(randomText(it + 1)) }
+    }
+}
+
+private val BINARY_RANDOM = Random(42)
 
 private val BINARY_INPUTS: List<ByteArray> = listOf(
     byteArrayOf(),
@@ -215,4 +231,9 @@ private val BINARY_INPUTS: List<ByteArray> = listOf(
     byteArrayOf(-128),
     ByteArray(2953) { it.toByte() },
     ByteArray(2954) { it.toByte() },
-)
+).let { static ->
+    buildList {
+        addAll(static)
+        repeat(1_000) { add(BINARY_RANDOM.nextBytes(it + 1)) }
+    }
+}
