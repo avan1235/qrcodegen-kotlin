@@ -5,10 +5,17 @@ import kotlinx.serialization.json.Json
 import kotlin.io.path.*
 import kotlin.random.Random
 
+
 fun main() {
+    deleteExistingTestData()
     generateTextTestData()
     generateBinaryTestData()
     generateTests()
+}
+
+@OptIn(ExperimentalPathApi::class)
+private fun deleteExistingTestData() {
+    Path("data").takeIf { it.exists() }?.deleteRecursively()
 }
 
 private fun generateTextTestData(): Int = generateTestData(

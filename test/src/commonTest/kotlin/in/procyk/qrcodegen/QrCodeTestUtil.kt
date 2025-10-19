@@ -8,9 +8,14 @@ import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readString
 import kotlinx.serialization.json.Json
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
+
+internal fun assertTestExistence(name: String) {
+    val file = readString("src/commonTest/kotlin/in/procyk/qrcodegen/$name.kt")
+
+    assertFalse(file.isBlank())
+    assertContains(file, "@Test")
+}
 
 internal fun assertTestData(dir: String, name: String) {
     val testData = readQrCodeTestData("data/$dir/$name")

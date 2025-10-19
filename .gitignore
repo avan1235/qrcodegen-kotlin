@@ -1,3 +1,7 @@
+test/src/commonTest/kotlin/in/procyk/qrcodegen/QrCodeBinaryTest.kt
+test/src/commonTest/kotlin/in/procyk/qrcodegen/QrCodeTextTest.kt
+test/data
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

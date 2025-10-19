@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -8,7 +12,11 @@ repositories {
 }
 
 kotlin {
-    jvm()
+    jvm {
+        mainRun {
+            mainClass = "in.procyk.qrcodegen.QrCodeTestGeneratorKt"
+        }
+    }
 
     linuxX64()
     linuxArm64()
@@ -28,4 +36,8 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
         }
     }
+}
+
+tasks.withType<AbstractTestTask>().configureEach {
+    dependsOn(":test:jvmRun")
 }
