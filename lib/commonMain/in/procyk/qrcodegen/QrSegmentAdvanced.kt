@@ -1,4 +1,5 @@
-/* 
+/*
+ * Based on code originally licensed under the MIT License:
  * QR Code generator library - Optional advanced logic (Java)
  * 
  * Copyright (c) Project Nayuki. (MIT License)
@@ -19,6 +20,9 @@
  *   liability, whether in an action of contract, tort or otherwise, arising from,
  *   out of or in connection with the Software or the use or other dealings in the
  *   Software.
+ *
+ * Modifications Copyright (c) 2025 Maciej Procyk. (Apache License, Version 2.0)
+ * https://github.com/avan1235/qrcodegen-kotlin
  */
 package `in`.procyk.qrcodegen
 
