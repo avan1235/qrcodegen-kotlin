@@ -33,6 +33,7 @@ import `in`.procyk.qrcodegen.QrSegment.Companion.getTotalBits
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeAlphanumeric
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeBytes
 import `in`.procyk.qrcodegen.QrSegment.Companion.makeNumeric
+import kotlin.io.encoding.Base64
 
 /**
  * Splits text into optimal segments and encodes kanji segments.
@@ -42,7 +43,6 @@ import `in`.procyk.qrcodegen.QrSegment.Companion.makeNumeric
  * @see QrCode
  */
 object QrSegmentAdvanced {
-    /*---- Optimal list of segments encoder ----*/
     /**
      * Returns a list of zero or more segments to represent the specified Unicode text string.
      * The resulting list optimally minimizes the total encoded bit length, subjected to the constraints
@@ -70,7 +70,6 @@ object QrSegmentAdvanced {
         // Check arguments
         require(QrCode.MIN_VERSION <= minVersion && minVersion <= maxVersion && maxVersion <= QrCode.MAX_VERSION) { "Invalid value" }
 
-
         // Iterate through version numbers, and make tentative segments
         var segs: MutableList<QrSegment>? = null
         val codePoints = toCodePoints(text)
@@ -79,7 +78,6 @@ object QrSegmentAdvanced {
             if (version == minVersion || version == 10 || version == 27) segs =
                 makeSegmentsOptimally(codePoints, version)
             checkNotNull(segs)
-
 
             // Check if the segments fit
             val dataCapacityBits = QrCode.getNumDataCodewords(version, ecl) * 8 // Number of data bits available
@@ -96,18 +94,16 @@ object QrSegmentAdvanced {
         }
     }
 
-
-    // Returns a new list of segments that is optimal for the given text at the given version number.
+    /** Returns a new list of segments that is optimal for the given text at the given version number. */
     private fun makeSegmentsOptimally(codePoints: IntArray, version: Int): MutableList<QrSegment> {
-        if (codePoints.size == 0) return ArrayList<QrSegment>()
+        if (codePoints.isEmpty()) return ArrayList()
         val charModes = computeCharacterModes(codePoints, version)
         return splitIntoSegments(codePoints, charModes)
     }
 
-
-    // Returns a new array representing the optimal mode per code point based on the given text and version.
+    /** Returns a new array representing the optimal mode per code point based on the given text and version. */
     private fun computeCharacterModes(codePoints: IntArray, version: Int): Array<QrSegment.Mode?> {
-        require(codePoints.size != 0)
+        require(codePoints.isNotEmpty())
         if (codePoints.size > 7089)  // Upper bound is the number of characters that fit in QR Code version 40, low error correction, numeric mode
             throw DataTooLongException("String too long")
         val modeTypes = arrayOf<QrSegment.Mode?>(
@@ -118,7 +114,6 @@ object QrSegmentAdvanced {
         ) // Do not modify
         val numModes = modeTypes.size
 
-
         // Segment header sizes, measured in 1/6 bits
         val headCosts = IntArray(numModes)
         for (i in 0..<numModes) {
@@ -126,18 +121,15 @@ object QrSegmentAdvanced {
             require(0 <= headCosts[i] && headCosts[i] <= (4 + 16) * 6)
         }
 
-
         // charModes[i][j] represents the mode to encode the code point at
         // index i such that the final segment ends in modeTypes[j] and the
         // total number of bits is minimized over all possible choices
-        val charModes = Array<Array<QrSegment.Mode?>?>(codePoints.size) { arrayOfNulls<QrSegment.Mode>(numModes) }
-
+        val charModes = Array<Array<QrSegment.Mode?>?>(codePoints.size) { arrayOfNulls(numModes) }
 
         // At the beginning of each iteration of the loop below,
         // prevCosts[j] is the exact minimum number of 1/6 bits needed to
         // encode the entire string prefix of length i, and end in modeTypes[j]
         var prevCosts = headCosts.copyOf()
-
 
         // Calculate costs using dynamic programming
         for (i in codePoints.indices) {
@@ -162,7 +154,6 @@ object QrSegmentAdvanced {
                 charModes[i]!![3] = modeTypes[3]
             }
 
-
             // Start new segment at the end to switch modes
             for (j in 0..<numModes) {  // To mode
                 for (k in 0..<numModes) {  // From mode
@@ -174,13 +165,11 @@ object QrSegmentAdvanced {
                 }
             }
 
-
             // A non-tight upper bound is when each of 7089 characters switches to
             // byte mode (4-bit header + 16-bit count) and requires 4 bytes in UTF-8
             for (cost in curCosts) require(0 <= cost && cost <= (4 + 16 + 32) * 6 * 7089)
             prevCosts = curCosts
         }
-
 
         // Find optimal ending mode
         var curMode: QrSegment.Mode? = null
@@ -196,7 +185,6 @@ object QrSegmentAdvanced {
             }
         }
 
-
         // Get optimal mode for each code point by tracing backwards
         val result = arrayOfNulls<QrSegment.Mode>(charModes.size)
         for (i in result.indices.reversed()) {
@@ -211,13 +199,13 @@ object QrSegmentAdvanced {
         return result
     }
 
-
-    // Returns a new list of segments based on the given text and modes, such that
-    // consecutive code points in the same mode are put into the same segment.
+    /**
+     * Returns a new list of segments based on the given text and modes, such that
+     * consecutive code points in the same mode are put into the same segment.
+     */
     private fun splitIntoSegments(codePoints: IntArray, charModes: Array<QrSegment.Mode?>): MutableList<QrSegment> {
-        require(codePoints.size != 0)
-        val result: MutableList<QrSegment> = ArrayList<QrSegment>()
-
+        require(codePoints.isNotEmpty())
+        val result: MutableList<QrSegment> = ArrayList()
 
         // Accumulate run of modes
         var curMode = charModes[0]
@@ -229,11 +217,13 @@ object QrSegmentAdvanced {
                 continue
             }
             val s = CodePoints.toString(*codePoints.sliceArray(start..<i))
-            if (curMode == QrSegment.Mode.BYTE) result.add(makeBytes(s.encodeToByteArray()))
-            else if (curMode == QrSegment.Mode.NUMERIC) result.add(makeNumeric(s))
-            else if (curMode == QrSegment.Mode.ALPHANUMERIC) result.add(makeAlphanumeric(s))
-            else if (curMode == QrSegment.Mode.KANJI) result.add(makeKanji(s))
-            else throw AssertionError()
+            when (curMode) {
+                QrSegment.Mode.BYTE -> makeBytes(s.encodeToByteArray())
+                QrSegment.Mode.NUMERIC -> makeNumeric(s)
+                QrSegment.Mode.ALPHANUMERIC -> makeAlphanumeric(s)
+                QrSegment.Mode.KANJI -> makeKanji(s)
+                else -> throw AssertionError()
+            }.let(result::add)
             if (i >= codePoints.size) return result
             curMode = charModes[i]
             start = i
@@ -241,9 +231,10 @@ object QrSegmentAdvanced {
         }
     }
 
-
-    // Returns a new array of Unicode code points (effectively
-    // UTF-32 / UCS-4) representing the given UTF-16 string.
+    /**
+     * Returns a new array of Unicode code points (effectively
+     * UTF-32 / UCS-4) representing the given UTF-16 string.
+     */
     private fun toCodePoints(s: CharSequence): IntArray {
         val result = IntArray(s.codePointCount()) { 0 }
         s.forEachCodePointIndexed { index, codePoint -> result[index] = codePoint }
@@ -253,19 +244,18 @@ object QrSegmentAdvanced {
         return result
     }
 
-
-    // Returns the number of UTF-8 bytes needed to encode the given Unicode code point.
+    /** Returns the number of UTF-8 bytes needed to encode the given Unicode code point. */
     private fun countUtf8Bytes(cp: Int): Int {
         require(cp >= 0) { "Invalid code point" }
-        if (cp < 0x80) return 1
-        else if (cp < 0x800) return 2
-        else if (cp < 0x10000) return 3
-        else if (cp < 0x110000) return 4
-        else throw IllegalArgumentException("Invalid code point")
+        return when {
+            cp < 0x80 -> 1
+            cp < 0x800 -> 2
+            cp < 0x10000 -> 3
+            cp < 0x110000 -> 4
+            else -> throw IllegalArgumentException("Invalid code point")
+        }
     }
 
-
-    /*---- Kanji mode segment encoder ----*/
     /**
      * Returns a segment representing the specified text string encoded in kanji mode.
      * Broadly speaking, the set of encodable characters are {kanji used in Japan,
@@ -288,7 +278,6 @@ object QrSegmentAdvanced {
         return QrSegment(QrSegment.Mode.KANJI, text.length, bb)
     }
 
-
     /**
      * Tests whether the specified string can be encoded as a segment in kanji mode.
      * Broadly speaking, the set of encodable characters are {kanji used in Japan,
@@ -304,14 +293,12 @@ object QrSegmentAdvanced {
         return text.all { isKanji(it.code) }
     }
 
-
     private fun isKanji(c: Int): Boolean {
         return c < UNICODE_TO_QR_KANJI.size && UNICODE_TO_QR_KANJI[c].toInt() != -1
     }
 
-
-    // Data derived from ftp://ftp.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/SHIFTJIS.TXT
-    private val PACKED_QR_KANJI_TO_UNICODE =
+    /** Data derived from ftp://ftp.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/SHIFTJIS.TXT */
+    private const val PACKED_QR_KANJI_TO_UNICODE =
         "MAAwATAC/wz/DjD7/xr/G/8f/wEwmzCcALT/QACo/z7/4/8/MP0w/jCdMJ4wA07dMAUwBjAHMPwgFSAQ/w8AXDAcIBb/XCAmICUgGCAZIBwgHf8I/wkwFDAV/zv/Pf9b/10wCDAJMAowCzAMMA0wDjAPMBAwEf8LIhIAsQDX//8A9/8dImD/HP8eImYiZyIeIjQmQiZA" +
                 "ALAgMiAzIQP/5f8EAKIAo/8F/wP/Bv8K/yAApyYGJgUlyyXPJc4lxyXGJaEloCWzJbIlvSW8IDswEiGSIZAhkSGTMBP/////////////////////////////IggiCyKGIocigiKDIioiKf////////////////////8iJyIoAKwh0iHUIgAiA///////////////////" +
                 "//////////8iICKlIxIiAiIHImEiUiJqImsiGiI9Ih0iNSIrIiz//////////////////yErIDAmbyZtJmogICAhALb//////////yXv/////////////////////////////////////////////////xD/Ef8S/xP/FP8V/xb/F/8Y/xn///////////////////8h" +
@@ -423,11 +410,11 @@ object QrSegmentAdvanced {
                 "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////" +
                 "/////////////////////////////////////////////w=="
 
-
     private val UNICODE_TO_QR_KANJI = ShortArray(1 shl 16) { -1 }
 
-    init {  // Unpack the Shift JIS table into a more computation-friendly form
-        val bytes = kotlin.io.encoding.Base64.decode(PACKED_QR_KANJI_TO_UNICODE)
+    init {
+        // Unpack the Shift JIS table into a more computation-friendly form
+        val bytes = Base64.decode(PACKED_QR_KANJI_TO_UNICODE)
         var i = 0
         while (i < bytes.size) {
             val c = (((bytes[i].toInt() and 0xFF) shl 8) or (bytes[i + 1].toInt() and 0xFF)).toChar()
