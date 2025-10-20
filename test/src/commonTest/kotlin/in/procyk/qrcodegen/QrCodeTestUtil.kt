@@ -11,14 +11,14 @@ import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 internal fun assertTestExistence(name: String) {
-    val file = readString("src/commonTest/kotlin/in/procyk/qrcodegen/$name.kt")
+    val file = readString(Path("src", "commonTest", "kotlin", "in", "procyk", "qrcodegen", "$name.kt"))
 
     assertFalse(file.isBlank())
     assertContains(file, "@Test")
 }
 
 internal fun assertTestData(dir: String, name: String) {
-    val testData = readQrCodeTestData("data/$dir/$name")
+    val testData = readQrCodeTestData(Path("data", dir, name))
     val result = runCatching {
         when (val input = testData.input) {
             is Input.Binary -> encodeBinary(input.bytes.toTypedArray().toByteArray(), QrCode.Ecc.valueOf(input.eccName))
@@ -49,8 +49,8 @@ internal fun assertTestData(dir: String, name: String) {
     }
 }
 
-private fun readQrCodeTestData(path: String): QrCodeTestData =
+private fun readQrCodeTestData(path: Path): QrCodeTestData =
     Json.decodeFromString(readString(path))
 
-private fun readString(path: String): String =
-    SystemFileSystem.source(Path(path)).buffered().buffered().use { it.readString() }
+private fun readString(path: Path): String =
+    SystemFileSystem.source(path).buffered().buffered().use { it.readString() }

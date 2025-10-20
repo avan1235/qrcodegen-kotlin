@@ -62,7 +62,7 @@ private fun <T> generateTestData(
                 }
             )
             val text = PrettyPrintJson.encodeToString<QrCodeTestData>(data)
-            Path("data/$dir/test${idx++}.json")
+            Path("data", dir, "test${idx++}.json")
                 .apply { parent.createDirectories() }
                 .writeText(text)
         }
@@ -82,7 +82,7 @@ private fun generateTests() {
            |class QRCode${uppercaseDir}Test {
             """.trimMargin().let(::appendLine)
 
-            val data = Path("data/$dir").listDirectoryEntries("test[0-9]*.json")
+            val data = Path("data", dir).listDirectoryEntries("test[0-9]*.json")
                 .sortedBy { it.nameWithoutExtension.removePrefix("test").toInt() }
 
             data.forEach { path ->
@@ -94,7 +94,7 @@ private fun generateTests() {
             }
 
             appendLine("}")
-        }.let(Path("src/commonTest/kotlin/in/procyk/qrcodegen/QrCode${uppercaseDir}Test.kt")::writeText)
+        }.let(Path("src", "commonTest", "kotlin", "in", "procyk", "qrcodegen", "QrCode${uppercaseDir}Test.kt")::writeText)
     }
 }
 
