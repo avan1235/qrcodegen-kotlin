@@ -27,7 +27,7 @@ kotlin {
 
     sourceSets {
         commonTest.dependencies {
-            implementation(project(":lib"))
+            implementation(project(":qrcodegen"))
             implementation(kotlin("test"))
             implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
         }

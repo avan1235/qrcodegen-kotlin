@@ -25,8 +25,6 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(artifactId = "qrcodegen")
-
     pom {
         val githubRepoUrl = "github.com/avan1235/QR-Code-generator-kotlin"
         name = "qrcodegen"

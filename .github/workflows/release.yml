@@ -91,7 +91,7 @@ jobs:
           distribution: corretto
 
       - name: Publish to Maven Central
-        run: ./gradlew lib:publishAllPublicationsToMavenCentralRepository
+        run: ./gradlew qrcodegen:publishAllPublicationsToMavenCentralRepository
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
@@ -123,7 +123,7 @@ jobs:
           distribution: corretto
 
       - name: Build documentation
-        run: ./gradlew lib:dokkaHtml
+        run: ./gradlew qrcodegen:dokkaHtml
         env:
           ORG_GRADLE_PROJECT_version: ${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
 
@@ -131,6 +131,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./lib/build/dokka/html
+          publish_dir: ./qrcodegen/build/dokka/html
           force_orphan: true
           cname: qrcodegen.kdocs.procyk.in
