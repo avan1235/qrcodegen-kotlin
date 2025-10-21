@@ -12,8 +12,10 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
+    permissions:
+      contents: read
     steps:
-      - name: Checkout to push branch
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -23,16 +25,17 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'corretto'
+          distribution: corretto
 
       - name: Run tests on ${{ matrix.os }}
         run: ${{ runner.os == 'Windows' && '.\gradlew.bat' || './gradlew' }} test:allTests
 
   release:
     name: Create release
-    permissions: write-all
     runs-on: macos-latest
     needs: test
+    permissions:
+      contents: write   # needed to create a GitHub release
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
@@ -41,7 +44,7 @@ jobs:
         run: echo "name=$(echo ${GITHUB_REF##*/})" >>$GITHUB_OUTPUT
         shell: bash
 
-      - name: Checkout to push branch
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -53,7 +56,7 @@ jobs:
         with:
           mytoken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create release
+      - name: Create GitHub release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
@@ -62,11 +65,12 @@ jobs:
 
   publish-release:
     name: Publish release
-    permissions: write-all
     runs-on: macos-latest
     needs: release
+    permissions:
+      contents: read    # only needs repo access to read sources
     steps:
-      - name: Checkout to push branch
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -79,9 +83,9 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'corretto'
+          distribution: corretto
 
-      - name: Publish to MavenCentral
+      - name: Publish to Maven Central
         run: ./gradlew lib:publishAllPublicationsToMavenCentralRepository
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
@@ -95,9 +99,11 @@ jobs:
     name: Publish documentation
     runs-on: ubuntu-latest
     needs: publish-release
+    permissions:
+      contents: write   # required to push to gh-pages
     steps:
-      - name: Checkout to push branch
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
@@ -106,17 +112,15 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'corretto'
+          distribution: corretto
 
-      - name: Build Documentation
+      - name: Build documentation
         run: ./gradlew lib:dokkaHtml
 
-      - name: Deploy
+      - name: Deploy documentation to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./lib/build/dokka/html
           force_orphan: true
           cname: qrcodegen.kdocs.procyk.in
-        env:
-          ORG_GRADLE_PROJECT_version: ${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
