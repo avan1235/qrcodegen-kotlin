@@ -21,6 +21,9 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
+      - name: Extract version from tag
+        uses: damienaicheh/extract-version-from-tag-action@v1.1.0
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -29,6 +32,8 @@ jobs:
 
       - name: Run tests on ${{ matrix.os }}
         run: ${{ runner.os == 'Windows' && '.\gradlew.bat' || './gradlew' }} test:allTests
+        env:
+          ORG_GRADLE_PROJECT_version: ${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
 
   release:
     name: Create release
@@ -108,6 +113,9 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
+      - name: Extract version from tag
+        uses: damienaicheh/extract-version-from-tag-action@v1.1.0
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -116,6 +124,8 @@ jobs:
 
       - name: Build documentation
         run: ./gradlew lib:dokkaHtml
+        env:
+          ORG_GRADLE_PROJECT_version: ${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
 
       - name: Deploy documentation to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
