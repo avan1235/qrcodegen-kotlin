@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>encodeSegments</title>
+    <link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../../ui-kit/ui-kit.min.js" defer="defer"></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+            <a class="library-name--link" href="../../../../index.html">
+                    qrcodegen
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+0.0.4        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active=""
+                        data-filter=":qrcodegen:dokkaHtml/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":qrcodegen:dokkaHtml/commonMain"
+                                       data-filter=":qrcodegen:dokkaHtml/commonMain"/>
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                        data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    qrcodegen
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="qrcodegen::in.procyk.qrcodegen/QrCode.Companion/encodeSegments/#kotlin.collections.MutableList[in.procyk.qrcodegen.QrSegment]#in.procyk.qrcodegen.QrCode.Ecc#kotlin.Int#kotlin.Int#kotlin.Int#kotlin.Boolean/PointingToDeclaration//1626203362">
+  <div class="breadcrumbs"><a href="../../../../index.html">qrcodegen</a><span class="delimiter">/</span><a href="../../index.html">in.procyk.qrcodegen</a><span class="delimiter">/</span><a href="../index.html">QrCode</a><span class="delimiter">/</span><a href="index.html">Companion</a><span class="delimiter">/</span><span class="current">encodeSegments</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>encode</span><wbr></wbr><span><span>Segments</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="encode-segments.html"><span class="token function">encodeSegments</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">segs<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><a href="../../-qr-segment/index.html">QrSegment</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">ecl<span class="token operator">: </span><a href="../-ecc/index.html">QrCode.Ecc</a><span class="token punctuation">, </span></span><span class="parameter ">minVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>MIN_VERSION<span class="token punctuation">, </span></span><span class="parameter ">maxVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>MAX_VERSION<span class="token punctuation">, </span></span><span class="parameter ">mask<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>-1<span class="token punctuation">, </span></span><span class="parameter ">boostEcl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">QrCode</a></div><p class="paragraph">Returns a QR Code representing the specified segments with the specified encoding parameters. The smallest possible QR Code version within the specified range is automatically chosen for the output. Iff boostEcl is <code class="lang-kotlin">true</code>, then the ECC level of the result may be higher than the ecl argument if it can be done without increasing the version. The mask number is either between 0 to 7 (inclusive) to force that mask, or −1 to automatically choose an appropriate mask (which may be slow).</p><p class="paragraph">This function allows the user to create a custom sequence of segments that switches between modes (such as alphanumeric and byte) to encode text in less space. This is a mid-level API; the high-level API is .encodeText and .encodeBinary.</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">a QR Code (not <code class="lang-kotlin">null</code>) representing the segments</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>segs</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the segments to encode</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>ecl</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the error correction level to use (not <code class="lang-kotlin">null</code>) (boostable)</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>min</span><wbr></wbr><span><span>Version</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the minimum allowed version of the QR Code (at least 1)</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>max</span><wbr></wbr><span><span>Version</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the maximum allowed version of the QR Code (at most 40)</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>mask</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the mask number to use (between 0 and 7 (inclusive)), or −1 for automatic mask</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>boost</span><wbr></wbr><span><span>Ecl</span></span></u></div></span></div><div><div class="title"><p class="paragraph">increases the ECC level as long as it doesn't increase the version number</p></div></div></div></div></div><h4 class="">Throws</h4><div class="table"><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-null-pointer-exception/index.html"><span>Null</span><wbr></wbr><span>Pointer</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if the list of segments, any segment, or the error correction level is <code class="lang-kotlin">null</code></p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-illegal-argument-exception/index.html"><span>Illegal</span><wbr></wbr><span>Argument</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if 1 ≤ minVersion ≤ maxVersion ≤ 40 or −1 ≤ mask ≤ 7 is violated</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../../-data-too-long-exception/index.html"><span>Data</span><wbr></wbr><span>Too</span><wbr></wbr><span>Long</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if the segments fail to fit in the maxVersion QR Code at the ECL, which means they are too long</p></div></div></div></div></div></div></div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

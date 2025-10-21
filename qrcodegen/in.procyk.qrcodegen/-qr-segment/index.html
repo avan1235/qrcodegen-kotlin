@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>QrSegment</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+            <a class="library-name--link" href="../../../index.html">
+                    qrcodegen
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+0.0.4        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active=""
+                        data-filter=":qrcodegen:dokkaHtml/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":qrcodegen:dokkaHtml/commonMain"
+                                       data-filter=":qrcodegen:dokkaHtml/commonMain"/>
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                        data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    qrcodegen
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="qrcodegen::in.procyk.qrcodegen/QrSegment///PointingToDeclaration//1626203362">
+  <div class="breadcrumbs"><a href="../../../index.html">qrcodegen</a><span class="delimiter">/</span><a href="../index.html">in.procyk.qrcodegen</a><span class="delimiter">/</span><span class="current">QrSegment</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Qr</span><wbr></wbr><span><span>Segment</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">QrSegment</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>mode<span class="token operator">: </span><a href="-mode/index.html">QrSegment.Mode</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>numChars<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">data<span class="token operator">: </span><a href="../-bit-buffer/index.html">BitBuffer</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A segment of character/binary/control data in a QR Code symbol. Instances of this class are immutable.</p><p class="paragraph">The mid-level way to create a segment is to take the payload data and call a static factory function such as <a href="-companion/make-numeric.html">QrSegment.makeNumeric</a>. The low-level way to create a segment is to custom-make the bit buffer and call the <a href="index.html"> </a> with appropriate values.</p><p class="paragraph">This segment class imposes no length restrictions, but QR Codes have restrictions. Even in the most favorable conditions, a QR Code can only hold 7089 characters of data. Any segment longer than this is meaningless for the purpose of generating QR Codes. This class can represent kanji mode segments, but provides no help in encoding them</p><ul><li><p class="paragraph">see <a href="../-qr-segment-advanced/index.html">QrSegmentAdvanced</a> for full kanji support.</p></li></ul><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>mode</span></span></u></div></span></div><div><div class="title"><p class="paragraph">mode indicator of this segment (not <code class="lang-kotlin">null</code>)</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>num</span><wbr></wbr><span><span>Chars</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The length of this segment's unencoded data. Measured in characters for numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode. Always zero or positive. Not the same as the data's bit length.</p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>data</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the data bits (not <code class="lang-kotlin">null</code>)</p></div></div></div></div></div><h4 class="">Throws</h4><div class="table"><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-null-pointer-exception/index.html"><span>Null</span><wbr></wbr><span>Pointer</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if the mode or data is <code class="lang-kotlin">null</code></p></div></div></div></div><div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-illegal-argument-exception/index.html"><span>Illegal</span><wbr></wbr><span>Argument</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">if the character count is negative</p></div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-2059274510%2FConstructors%2F1626203362" anchor-label="QrSegment" id="-2059274510%2FConstructors%2F1626203362" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-qr-segment.html"><span>Qr</span><wbr></wbr><span><span>Segment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2059274510%2FConstructors%2F1626203362"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">mode<span class="token operator">: </span><a href="-mode/index.html">QrSegment.Mode</a><span class="token punctuation">, </span></span><span class="parameter ">numChars<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">data<span class="token operator">: </span><a href="../-bit-buffer/index.html">BitBuffer</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Constructs a QR Code segment with the specified attributes and data. The character count (numCh) must agree with the mode and the bit buffer length, but the constraint isn't checked. The specified bit buffer is cloned and stored.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1097723093%2FClasslikes%2F1626203362" anchor-label="Companion" id="-1097723093%2FClasslikes%2F1626203362" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1097723093%2FClasslikes%2F1626203362"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="489935784%2FClasslikes%2F1626203362" anchor-label="Mode" id="489935784%2FClasslikes%2F1626203362" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-mode/index.html"><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="489935784%2FClasslikes%2F1626203362"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-mode/index.html">Mode</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-mode/index.html">QrSegment.Mode</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Describes how a segment's data bits are interpreted.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1714990284%2FProperties%2F1626203362" anchor-label="data" id="1714990284%2FProperties%2F1626203362" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="data.html"><span><span>data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1714990284%2FProperties%2F1626203362"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="data.html">data</a><span class="token operator">: </span><a href="../-bit-buffer/index.html">BitBuffer</a></div><div class="brief "><p class="paragraph">Returns the data bits of this segment.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2009750771%2FProperties%2F1626203362" anchor-label="mode" id="2009750771%2FProperties%2F1626203362" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="mode.html"><span><span>mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2009750771%2FProperties%2F1626203362"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="mode.html">mode</a><span class="token operator">: </span><a href="-mode/index.html">QrSegment.Mode</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="391821471%2FProperties%2F1626203362" anchor-label="numChars" id="391821471%2FProperties%2F1626203362" data-filterable-set=":qrcodegen:dokkaHtml/commonMain"></a>
+          <div class="table-row" data-filterable-current=":qrcodegen:dokkaHtml/commonMain" data-filterable-set=":qrcodegen:dokkaHtml/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="num-chars.html"><span>num</span><wbr></wbr><span><span>Chars</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="391821471%2FProperties%2F1626203362"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":qrcodegen:dokkaHtml/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="num-chars.html">numChars</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
